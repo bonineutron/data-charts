@@ -23,7 +23,7 @@ export default function LayoutOrganism({
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <TopBarMolecule />
-      <main className='h-screen w-[90%] py-10 mx-auto md:w-[70%] lg:w-[900px] xl:w-[1100px]'>
+      <main className='min-h-screen w-[90%] py-10 mx-auto md:w-[70%] lg:w-[900px] xl:w-[1100px]'>
         {children}
       </main>
       <FooterMolecule />
