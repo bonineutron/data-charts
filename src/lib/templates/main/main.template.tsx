@@ -1,7 +1,7 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale } from 'chart.js';
 import { userDataMock } from '../../../shared/mocks/data-users.mock';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
-import { IUserData } from './interfaces/main.interface';
+import { IUserData } from '../../../shared/interfaces/users.interface';
 import { Doughnut, PolarArea, Pie } from 'react-chartjs-2';
 
 export default function MainTemplate(): JSX.Element {

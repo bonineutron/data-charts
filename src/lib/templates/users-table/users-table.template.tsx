@@ -1,6 +1,7 @@
+import { IUserData } from '../../../shared/interfaces/users.interface';
 import { userDataMock } from '../../../shared/mocks/data-users.mock';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
-import { IUserData } from '../main/interfaces/main.interface';
+import TableAtom from '../../atoms/table/table.atom';
 import { useState, useEffect } from 'react';
 
 export default function UsersTableTemplate() {
@@ -42,36 +43,20 @@ export default function UsersTableTemplate() {
           </button>
         </div>
       </div>
-      <section className='w-full shadow-lg rounded-lg overflow-x-auto'>
-        <div className='min-w-[740px] flex p-4 bg-gray-100 rounded-t-lg font-semibold'>
-          <div className='w-[20%]'>
-            <h2>Code</h2>
-          </div>
-          <div className='w-[30%]'>
-            <h2>Name</h2>
-          </div>
-          <div className='w-[50%]'>
-            <h2>Mail</h2>
-          </div>
-        </div>
-        <div className='min-w-[740px]'>
-          {data.map((user: IUserData, index: number) => (
-            <div
-              key={index}
-              className={`flex px-4 py-1 text-gray-600 ${index % 2 && 'bg-gray-100'}`}>
-              <div className='w-[20%]'>
-                <h3>{user.code}</h3>
-              </div>
-              <div className='w-[30%]'>
-                <h3>{user.name}</h3>
-              </div>
-              <div className='w-[50%]'>
-                <h3>{user.email}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <TableAtom
+        data={{
+          headCells: [
+            { content: 'Code', width: 'w-[20%]' },
+            { content: 'Name', width: 'w-[30%]' },
+            { content: 'Mail', width: 'w-[50%]' }
+          ],
+          bodyCells: data.map((user: IUserData) => [
+            { content: user.code, width: 'w-[20%]' },
+            { content: user.name, width: 'w-[30%]' },
+            { content: user.email, width: 'w-[50%]' }
+          ])
+        }}
+      />
     </LayoutOrganism>
   );
 }
