@@ -1,0 +1,22 @@
+export interface ICompletedActivitiesData {
+  id: number | null;
+  Usuario: number | null;
+  Nombre: string | null;
+  Apellido: string | null;
+  Email: string | null;
+  city: string | null;
+  country: string | null;
+  theme: string | null;
+  idCurso: number | null;
+  idseccion: number | null;
+  Seccion: string | null;
+  Curso: string | null;
+  tipo_curso: string | null;
+  Categoria: string | null;
+  Categoria1: string | null;
+  cursocorto: string | null;
+  Actividad: string | null;
+  orden_actividad: number | null;
+  tipo: string | null;
+  Finalizacion: number | null;
+}

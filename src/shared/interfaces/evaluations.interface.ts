@@ -1,0 +1,23 @@
+export interface IEvaluations {
+  id: number | null;
+  Usuario: string | null;
+  Nombre: string | null;
+  Apellido: string | null;
+  Email: string | null;
+  city: string | null;
+  country: string | null;
+  theme: string | null;
+  idCurso: number | null;
+  idmodules: number | null;
+  idseccion: number | null;
+  seccion: string | null;
+  Curso: string | null;
+  cursocorto: string | null;
+  Categoria: string | null;
+  Categoria1: string | null;
+  Evaluacion: string | null;
+  Nota: string | null;
+  Objetivo: string | null;
+  Porcentaje: string | null;
+  tipo_curso: string | null;
+}
