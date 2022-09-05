@@ -64,6 +64,7 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
             label='Cursos:'
             setValue={setCourse}
             options={coursesOptions ? coursesOptions.map((course: any) => ({ value: course, label: course })) : []}
+            customClass='w-[170px]'
           />
           <Select
             value={category}
@@ -72,6 +73,7 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
             options={
               categoriesOptions ? categoriesOptions.map((category: any) => ({ value: category, label: category })) : []
             }
+            customClass='w-[170px]'
           />
         </div>
         <div className='w-[150px] flex justify-between items-center'>

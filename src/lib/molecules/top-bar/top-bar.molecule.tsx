@@ -28,7 +28,7 @@ export default function TopBarMolecule(): JSX.Element {
   };
 
   return (
-    <nav className='h-[60px] shadow-lg'>
+    <nav className='fixed w-full z-[100] h-[60px] shadow-lg bg-white'>
       <ul className='relative w-[90%] h-full mx-auto flex justify-between items-center text-[18px] font-semibold md:w-[70%] lg:w-[900px] xl:w-[1100px]'>
         <Link href='/'>
           <a className='min-w-fit'>Data Charts</a>
