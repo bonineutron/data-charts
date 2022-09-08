@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
 
@@ -17,6 +18,7 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
   const [dataTable, setDataTable] = useState<ICourseData[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<any>([]);
   const [category, setCategory] = useState<number>(0);
+  const [barValues, setBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -24,11 +26,18 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
   }, [data]);
   useEffect(() => {
     // categories filtering
-    let categories = dataTable.map((a: ICourseData) => a.category);
+    let categories = dataTable.map((category: ICourseData) => category.category);
     setCategoryOptions(categories.filter((item: number | null, index: number) => categories.indexOf(item) === index));
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // data bar chart
+    let categories = dataTable.map((category: ICourseData) => category.category);
+    let categoryCount = categories.reduce((prev: any, curr: any) => ((prev[curr] = prev[curr] + 1 || 1), prev), {});
+    let reorderCount = categoryOptions.map((category: any) => (category = categoryCount[category]));
+    setBarValues(reorderCount);
+  }, [categoryOptions]);
 
   // methods
   const filter = (category: number) => {
@@ -37,6 +46,12 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
       setDataTable(dataTable.filter((activity: ICourseData) => activity.category === category));
       return;
     }
+  };
+  const resetStates = () => {
+    setDataTable([...data]);
+    setFilterStarted(false);
+    setMessageNotFound(false);
+    setCategory(0);
   };
 
   return (
@@ -54,17 +69,10 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
         </div>
         <div className='w-[150px] flex justify-between items-center'>
           <ButtonAtom content='Filtrar' onClick={() => filter(category)} customClass='shadow-lg' />
-          <ButtonAtom
-            content={<MdRefresh />}
-            onClick={() => {
-              setDataTable([...data]);
-              setFilterStarted(false);
-              setMessageNotFound(false);
-            }}
-            customClass='shadow-lg text-[24px]'
-          />
+          <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <Bar dataBar={barValues} labels={categoryOptions} title='Total de Categorias' />
       <TableOrganism
         data={{
           headCells: [

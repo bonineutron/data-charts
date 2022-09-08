@@ -1,5 +1,6 @@
 import { INotAccessData } from '../../../shared/interfaces/not-access.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
+import TotalsCard from '../../atoms/totals-card/totals-card.atom';
 import TableOrganism from '../../organisms/table/table.organism';
 import Button from '../../atoms/button/button.atom';
 import Input from '../../atoms/input/input.atom';
@@ -83,6 +84,7 @@ export default function NotAccessTemplate({ data }: PropsNotAccessTemplate): JSX
           <Button content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <TotalsCard title={dataTable.length} subTitle='Total de usuarios que no han accedido' />
       <TableOrganism
         data={{
           headCells: [

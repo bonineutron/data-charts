@@ -1,5 +1,6 @@
 import { ILastAccessData } from '../../../shared/interfaces/last-access.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
+import TotalsCard from '../../atoms/totals-card/totals-card.atom';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
@@ -143,6 +144,7 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <TotalsCard title={dataTable.length} subTitle='Total de Ultimos Accesos' />
       <TableOrganism
         data={{
           headCells: [

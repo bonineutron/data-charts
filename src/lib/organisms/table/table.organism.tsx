@@ -23,7 +23,7 @@ export default function TableAtom({ data, messageNotFound }: PropsTableAtom): JS
 
   if (messageNotFound) {
     return (
-      <div className='w-[200px] h-[40px] mx-auto mt-10 flex items-center justify-center text-red-400 font-semibold border-red-400 border-2 rounded-md'>
+      <div className='w-[200px] h-[40px] mx-auto mt-10 flex items-center justify-center text-secondary-color font-semibold border-secondary-color border-2 rounded-md'>
         <span>Sin resultados</span>
       </div>
     );

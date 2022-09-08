@@ -23,7 +23,7 @@ export default function TopBarMolecule(): JSX.Element {
   // refactor
   const aClass = (path: string): string => {
     return `${
-      router.pathname === path ? 'text-red-400' : ''
+      router.pathname === path ? 'text-primary-color' : ''
     } min-w-fit border-b-[1px] border-gray-200 hover:text-gray-400`;
   };
 
@@ -80,7 +80,10 @@ export default function TopBarMolecule(): JSX.Element {
             <a className={aClass('/last-access')}>Ultimo acceso</a>
           </Link>
           <Link href='/online-users'>
-            <a className={`${router.pathname === '/online-users' ? 'text-red-400' : ''} min-w-fit hover:text-gray-400`}>
+            <a
+              className={`${
+                router.pathname === '/online-users' ? 'text-primary-color' : ''
+              } min-w-fit hover:text-gray-400`}>
               Usuarios en línea
             </a>
           </Link>

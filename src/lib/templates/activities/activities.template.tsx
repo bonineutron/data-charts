@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
 
@@ -18,7 +19,8 @@ export default function ActivitiesTemplate({ data }: PropsActivitiesTemplate): J
   const [coursesOptions, setCoursesOptions] = useState<any>([]);
   const [modulesOptions, setModulesOptions] = useState<any>([]);
   const [course, setCourse] = useState<number>(0);
-  const [module, setModule] = useState<number>(0);
+  const [module, setModule] = useState<string>('');
+  const [barValues, setBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -26,21 +28,28 @@ export default function ActivitiesTemplate({ data }: PropsActivitiesTemplate): J
   }, [data]);
   useEffect(() => {
     // module filtering
-    let modules = dataTable.map((a: IActivityData) => a.module);
-    setModulesOptions(modules.filter((item: number | null, index: number) => modules.indexOf(item) === index));
+    let modules = dataTable.map((a: IActivityData) => a.modulo);
+    setModulesOptions(modules.filter((item: string | null, index: number) => modules.indexOf(item) === index));
     // courses filtering
     let courses = dataTable.map((a: IActivityData) => a.course);
     setCoursesOptions(courses.filter((item: number | null, index: number) => courses.indexOf(item) === index));
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // data bar chart
+    let modules = dataTable.map((category: IActivityData) => category.modulo);
+    let moduleCount = modules.reduce((prev: any, curr: any) => ((prev[curr] = prev[curr] + 1 || 1), prev), {});
+    let reorderCount = modulesOptions.map((category: any) => (category = moduleCount[category]));
+    setBarValues(reorderCount);
+  }, [modulesOptions]);
 
   // methods
-  const filter = (module: number, course: number) => {
+  const filter = (module: string, course: number) => {
     setFilterStarted(true);
-    if (module !== 0 && course !== 0) {
+    if (module && course !== 0) {
       setDataTable(
-        dataTable.filter((activity: IActivityData) => activity.module === module && activity.course === course)
+        dataTable.filter((activity: IActivityData) => activity.modulo === module && activity.course === course)
       );
       return;
     }
@@ -48,41 +57,43 @@ export default function ActivitiesTemplate({ data }: PropsActivitiesTemplate): J
       setDataTable(dataTable.filter((activity: IActivityData) => activity.course === course));
       return;
     }
-    if (module !== 0) {
-      setDataTable(dataTable.filter((activity: IActivityData) => activity.course === course));
+    if (module) {
+      setDataTable(dataTable.filter((activity: IActivityData) => activity.modulo === module));
     }
+  };
+  const resetStates = () => {
+    setDataTable([...data]);
+    setFilterStarted(false);
+    setMessageNotFound(false);
+    setCourse(0);
+    setModule('');
   };
 
   return (
     <LayoutOrganism title='Data Charts - Activities' name='description' content='Activities page.'>
       <div className='flex justify-between items-center mb-4'>
-        <div className='w-[450px] flex justify-between'>
+        <div className='w-[500px] flex justify-between'>
           <Select
             value={course}
             label='Cursos:'
             setValue={setCourse}
             options={coursesOptions ? coursesOptions.map((course: any) => ({ value: course, label: course })) : []}
+            customClass='w-[170px]'
           />
           <Select
             value={module}
             label='Modulos:'
             setValue={setModule}
             options={modulesOptions ? modulesOptions.map((module: any) => ({ value: module, label: module })) : []}
+            customClass='w-[170px]'
           />
         </div>
         <div className='w-[150px] flex justify-between items-center'>
           <ButtonAtom content='Filtrar' onClick={() => filter(module, course)} customClass='shadow-lg' />
-          <ButtonAtom
-            content={<MdRefresh />}
-            onClick={() => {
-              setDataTable([...data]);
-              setFilterStarted(false);
-              setMessageNotFound(false);
-            }}
-            customClass='shadow-lg text-[24px]'
-          />
+          <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <Bar dataBar={barValues} labels={modulesOptions} title='Total de Modulos' />
       <TableOrganism
         data={{
           headCells: [

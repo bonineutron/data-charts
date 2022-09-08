@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
@@ -20,6 +21,7 @@ export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollme
   const [course, setCourse] = useState<string>('');
   const [dateOne, setdateOne] = useState<string>('');
   const [dateTwo, setdateTwo] = useState<string>('');
+  const [barValues, setBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -32,6 +34,13 @@ export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollme
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // data bar chart
+    let courses = dataTable.map((category: IStudentEnrollmentData) => category.Curso);
+    let courseCount = courses.reduce((prev: any, curr: any) => ((prev[curr] = prev[curr] + 1 || 1), prev), {});
+    let reorderCount = coursesOptions.map((category: any) => (category = courseCount[category]));
+    setBarValues(reorderCount);
+  }, [coursesOptions]);
 
   // methods
   const filter = (course: string, dateOne: string, dateTwo: string) => {
@@ -123,6 +132,7 @@ export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollme
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <Bar dataBar={barValues} labels={coursesOptions} title='Total de Matriculados por Curso' />
       <TableOrganism
         data={{
           headCells: [

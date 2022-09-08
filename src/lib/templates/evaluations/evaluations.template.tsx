@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
 
@@ -17,8 +18,11 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
   const [dataTable, setDataTable] = useState<IEvaluations[]>([]);
   const [coursesOptions, setCoursesOptions] = useState<any>([]);
   const [categoriesOptions, setCategoriesOptions] = useState<any>([]);
-  const [course, setCourse] = useState<number>(0);
+  const [course, setCourse] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  // bar states
+  const [categoriesBarValues, setCategoriesBarValues] = useState<number[]>([]);
+  const [coursesBarValues, setCoursesBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -29,28 +33,81 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
     let categories = dataTable.map((a: IEvaluations) => a.Categoria);
     setCategoriesOptions(categories.filter((item: string | null, index: number) => categories.indexOf(item) === index));
     // courses filtering
-    let courses = dataTable.map((a: IEvaluations) => a.idCurso);
-    setCoursesOptions(courses.filter((item: number | null, index: number) => courses.indexOf(item) === index));
+    let courses = dataTable.map((a: IEvaluations) => a.Curso);
+    setCoursesOptions(courses.filter((item: string | null, index: number) => courses.indexOf(item) === index));
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // categories data bar chart
+    let separateCategories: IEvaluations[][] = [];
+    for (let i: number = 0; i < categoriesOptions.length; i++) {
+      separateCategories.push(
+        dataTable.filter((category: IEvaluations) => category.Categoria === categoriesOptions[i])
+      );
+    }
+    let separateQualification = separateCategories.map((categories: IEvaluations[]) =>
+      categories.map((category: IEvaluations) => {
+        if (category.Nota != null) {
+          return Number(category.Nota).toFixed(1);
+        }
+      })
+    );
+    let completionCount: number[] = separateQualification.map(
+      (ending: (string | undefined)[]) =>
+        ending &&
+        Number(
+          (ending.reduce((prev: number, curr: string | undefined) => prev + Number(curr), 0) / ending.length).toFixed(1)
+        )
+    );
+    setCategoriesBarValues(completionCount);
+  }, [categoriesOptions]);
+  useEffect(() => {
+    // courses data bar chart
+    let separateCourses: IEvaluations[][] = [];
+    for (let i: number = 0; i < coursesOptions.length; i++) {
+      separateCourses.push(dataTable.filter((category: IEvaluations) => category.Curso === coursesOptions[i]));
+    }
+    let separateQualification = separateCourses.map((categories: IEvaluations[]) =>
+      categories.map((category: IEvaluations) => {
+        if (category.Nota != null) {
+          return Number(category.Nota).toFixed(1);
+        }
+      })
+    );
+    let completionCount: number[] = separateQualification.map(
+      (ending: (string | undefined)[]) =>
+        ending &&
+        Number(
+          (ending.reduce((prev: number, curr: string | undefined) => prev + Number(curr), 0) / ending.length).toFixed(1)
+        )
+    );
+    setCoursesBarValues(completionCount);
+  }, [coursesOptions]);
 
   // methods
-  const filter = (category: string, course: number) => {
+  const filter = (category: string, course: string) => {
     setFilterStarted(true);
-    if (category !== '' && course !== 0) {
+    if (category && course) {
       setDataTable(
-        dataTable.filter((activity: IEvaluations) => activity.Categoria === category && activity.idCurso === course)
+        dataTable.filter((activity: IEvaluations) => activity.Categoria === category && activity.Curso === course)
       );
       return;
     }
-    if (course !== 0) {
-      setDataTable(dataTable.filter((activity: IEvaluations) => activity.idCurso === course));
+    if (course) {
+      setDataTable(dataTable.filter((activity: IEvaluations) => activity.Curso === course));
       return;
     }
-    if (category !== '') {
+    if (category) {
       setDataTable(dataTable.filter((activity: IEvaluations) => activity.Categoria === category));
     }
+  };
+  const resetStates = () => {
+    setDataTable([...data]);
+    setFilterStarted(false);
+    setMessageNotFound(false);
+    setCourse('');
+    setCategory('');
   };
 
   return (
@@ -62,6 +119,7 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
             label='Cursos:'
             setValue={setCourse}
             options={coursesOptions ? coursesOptions.map((course: any) => ({ value: course, label: course })) : []}
+            customClass='w-[170px]'
           />
           <Select
             value={category}
@@ -70,21 +128,16 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
             options={
               categoriesOptions ? categoriesOptions.map((category: any) => ({ value: category, label: category })) : []
             }
+            customClass='w-[170px]'
           />
         </div>
         <div className='w-[150px] flex justify-between items-center'>
           <ButtonAtom content='Filtrar' onClick={() => filter(category, course)} customClass='shadow-lg' />
-          <ButtonAtom
-            content={<MdRefresh />}
-            onClick={() => {
-              setDataTable([...data]);
-              setFilterStarted(false);
-              setMessageNotFound(false);
-            }}
-            customClass='shadow-lg text-[24px]'
-          />
+          <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <Bar dataBar={coursesBarValues} labels={coursesOptions} title='Promedio de Notas por Cursos' />
+      <Bar dataBar={categoriesBarValues} labels={categoriesOptions} title='Promedio de Notas por Categorias' />
       <TableOrganism
         data={{
           headCells: [

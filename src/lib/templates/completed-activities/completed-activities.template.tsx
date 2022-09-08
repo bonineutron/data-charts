@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
 
@@ -17,8 +18,11 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
   const [dataTable, setDataTable] = useState<ICompletedActivitiesData[]>([]);
   const [coursesOptions, setCoursesOptions] = useState<any>([]);
   const [categoriesOptions, setCategoriesOptions] = useState<any>([]);
-  const [course, setCourse] = useState<number>(0);
+  const [course, setCourse] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  // bar states
+  const [categoriesBarValues, setCategoriesBarValues] = useState<number[]>([]);
+  const [coursesBarValues, setCoursesBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -29,30 +33,69 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
     let categories = dataTable.map((a: ICompletedActivitiesData) => a.Categoria);
     setCategoriesOptions(categories.filter((item: string | null, index: number) => categories.indexOf(item) === index));
     // courses filtering
-    let courses = dataTable.map((a: ICompletedActivitiesData) => a.idCurso);
-    setCoursesOptions(courses.filter((item: number | null, index: number) => courses.indexOf(item) === index));
+    let courses = dataTable.map((a: ICompletedActivitiesData) => a.Curso);
+    setCoursesOptions(courses.filter((item: string | null, index: number) => courses.indexOf(item) === index));
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // categories data bar chart
+    let separateCategories: ICompletedActivitiesData[][] = [];
+    for (let i: number = 0; i < categoriesOptions.length; i++) {
+      separateCategories.push(
+        dataTable.filter((category: ICompletedActivitiesData) => category.Categoria === categoriesOptions[i])
+      );
+    }
+    let separateFinished = separateCategories.map((categories: ICompletedActivitiesData[]) =>
+      categories.map((category: ICompletedActivitiesData) => category.Finalizacion)
+    );
+    let filterFinished = separateFinished.map((completions: (number | null)[]) =>
+      completions.filter((item: number | null) => item === 1)
+    );
+    let completionCount: number[] = filterFinished.map((ending: (number | null)[]) => ending.length);
+    setCategoriesBarValues(completionCount);
+  }, [categoriesOptions]);
+  useEffect(() => {
+    // courses data bar chart
+    let separateCourses: ICompletedActivitiesData[][] = [];
+    for (let i: number = 0; i < coursesOptions.length; i++) {
+      separateCourses.push(dataTable.filter((course: ICompletedActivitiesData) => course.Curso === coursesOptions[i]));
+    }
+    let separateFinished = separateCourses.map((courses: ICompletedActivitiesData[]) =>
+      courses.map((course: ICompletedActivitiesData) => course.Finalizacion)
+    );
+    let filterFinished = separateFinished.map((completions: (number | null)[]) =>
+      completions.filter((item: number | null) => item === 1)
+    );
+    let completionCount: number[] = filterFinished.map((ending: (number | null)[]) => ending.length);
+    setCoursesBarValues(completionCount);
+  }, [coursesOptions]);
 
   // methods
-  const filter = (category: string, course: number) => {
+  const filter = (category: string, course: string) => {
     setFilterStarted(true);
-    if (category !== '' && course !== 0) {
+    if (category && course) {
       setDataTable(
         dataTable.filter(
-          (activity: ICompletedActivitiesData) => activity.Categoria === category && activity.idCurso === course
+          (activity: ICompletedActivitiesData) => activity.Categoria === category && activity.Curso === course
         )
       );
       return;
     }
-    if (course !== 0) {
-      setDataTable(dataTable.filter((activity: ICompletedActivitiesData) => activity.idCurso === course));
+    if (course) {
+      setDataTable(dataTable.filter((activity: ICompletedActivitiesData) => activity.Curso === course));
       return;
     }
     if (category !== '') {
       setDataTable(dataTable.filter((activity: ICompletedActivitiesData) => activity.Categoria === category));
     }
+  };
+  const resetStates = () => {
+    setDataTable([...data]);
+    setFilterStarted(false);
+    setMessageNotFound(false);
+    setCourse('');
+    setCategory('');
   };
 
   return (
@@ -76,19 +119,13 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
             customClass='w-[170px]'
           />
         </div>
-        <div className='w-[150px] flex justify-between items-center'>
+        <div className='w-[150px] flex justify-between items-center gap-4'>
           <ButtonAtom content='Filtrar' onClick={() => filter(category, course)} customClass='shadow-lg' />
-          <ButtonAtom
-            content={<MdRefresh />}
-            onClick={() => {
-              setDataTable([...data]);
-              setFilterStarted(false);
-              setMessageNotFound(false);
-            }}
-            customClass='shadow-lg text-[24px]'
-          />
+          <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <Bar dataBar={coursesBarValues} labels={coursesOptions} title='Finalizados por Cursos' />
+      <Bar dataBar={categoriesBarValues} labels={categoriesOptions} title='Finalizados por Categorias' />
       <TableOrganism
         data={{
           headCells: [

@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
@@ -20,6 +21,8 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
   const [category, setCategory] = useState<string>('');
   const [dateOne, setdateOne] = useState<string>('');
   const [dateTwo, setdateTwo] = useState<string>('');
+  // bar states
+  const [categoriesBarValues, setCategoriesBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -32,6 +35,23 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // categories data bar chart
+    let separateCategories: IStateCourseData[][] = [];
+    for (let i: number = 0; i < categoryOptions.length; i++) {
+      separateCategories.push(
+        dataTable.filter((category: IStateCourseData) => category.Categoria === categoryOptions[i])
+      );
+    }
+    let separateFinished = separateCategories.map((categories: IStateCourseData[]) =>
+      categories.map((category: IStateCourseData) => category.Estado)
+    );
+    let filterFinished = separateFinished.map((completions: (string | null)[]) =>
+      completions.filter((item: string | null) => item === 'Activo')
+    );
+    let completionCount: number[] = filterFinished.map((ending: (string | null)[]) => ending.length);
+    setCategoriesBarValues(completionCount);
+  }, [categoryOptions]);
 
   // methods
   const filter = (category: string, dateOne: string, dateTwo: string) => {
@@ -124,6 +144,11 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <Bar
+        dataBar={categoriesBarValues}
+        labels={categoryOptions.map((category: string | null) => (category === null ? 'null' : category))}
+        title='Cantidad de Cursos Activos por Categoria'
+      />
       <TableOrganism
         data={{
           headCells: [
