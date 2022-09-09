@@ -7,6 +7,7 @@ import Select from '../../atoms/select/select.atom';
 import Input from '../../atoms/input/input.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { CSVLink } from 'react-csv';
 
 type PropsLastAccessTemplate = {
   data: ILastAccessData[];
@@ -98,7 +99,7 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
   return (
     <LayoutOrganism title='Data Charts - Last Access' name='description' content='Last access page.'>
       <div className='flex justify-between items-end mb-4'>
-        <div className='w-[900px] flex justify-between'>
+        <div className='w-[800px] flex justify-between'>
           <Select
             value={course}
             label='Cursos:'
@@ -135,13 +136,16 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
             flexCol
           />
         </div>
-        <div className='w-[150px] flex justify-between items-center'>
+        <div className='w-[200px] flex justify-between items-center'>
           <ButtonAtom
             content='Filtrar'
             onClick={() => filter(category, course, dateOne, dateTwo)}
             customClass='shadow-lg'
           />
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
+          <CSVLink data={dataTable} className='px-4 py-2 bg-[#1ABC9C] text-white font-semibold rounded-lg shadow-lg'>
+            CSV
+          </CSVLink>
         </div>
       </div>
       <TotalsCard title={dataTable.length} subTitle='Total de Ultimos Accesos' />

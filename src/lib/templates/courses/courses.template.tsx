@@ -6,6 +6,7 @@ import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { CSVLink } from 'react-csv';
 
 type PropsCoursesTemplate = {
   data: ICourseData[];
@@ -67,9 +68,12 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
             }
           />
         </div>
-        <div className='w-[150px] flex justify-between items-center'>
+        <div className='w-[200px] flex justify-between items-center'>
           <ButtonAtom content='Filtrar' onClick={() => filter(category)} customClass='shadow-lg' />
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
+          <CSVLink data={dataTable} className='px-4 py-2 bg-[#1ABC9C] text-white font-semibold rounded-lg shadow-lg'>
+            CSV
+          </CSVLink>
         </div>
       </div>
       <Bar dataBar={barValues} labels={categoryOptions} title='Total de Categorias' />

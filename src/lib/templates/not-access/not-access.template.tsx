@@ -6,6 +6,7 @@ import Button from '../../atoms/button/button.atom';
 import Input from '../../atoms/input/input.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { CSVLink } from 'react-csv';
 
 type PropsNotAccessTemplate = {
   data: INotAccessData[];
@@ -79,9 +80,12 @@ export default function NotAccessTemplate({ data }: PropsNotAccessTemplate): JSX
             disabled={!dateOne && true}
           />
         </div>
-        <div className='w-[150px] flex justify-between items-center'>
+        <div className='w-[200px] flex justify-between items-center'>
           <Button content='Filtrar' onClick={() => filter(dateOne, dateTwo)} customClass='shadow-lg' />
           <Button content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
+          <CSVLink data={dataTable} className='px-4 py-2 bg-[#1ABC9C] text-white font-semibold rounded-lg shadow-lg'>
+            CSV
+          </CSVLink>
         </div>
       </div>
       <TotalsCard title={dataTable.length} subTitle='Total de usuarios que no han accedido' />

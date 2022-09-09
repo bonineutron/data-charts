@@ -5,6 +5,7 @@ import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { CSVLink } from 'react-csv';
 
 type PropsCompletedCoursesTemplate = {
   data: ICompletedCoursesData[];
@@ -74,7 +75,7 @@ export default function CompletedCoursesTemplate({ data }: PropsCompletedCourses
             }
           />
         </div>
-        <div className='w-[150px] flex justify-between items-center'>
+        <div className='w-[200px] flex justify-between items-center'>
           <ButtonAtom content='Filtrar' onClick={() => filter(category, course)} customClass='shadow-lg' />
           <ButtonAtom
             content={<MdRefresh />}
@@ -85,6 +86,9 @@ export default function CompletedCoursesTemplate({ data }: PropsCompletedCourses
             }}
             customClass='shadow-lg text-[24px]'
           />
+          <CSVLink data={dataTable} className='px-4 py-2 bg-[#1ABC9C] text-white font-semibold rounded-lg shadow-lg'>
+            CSV
+          </CSVLink>
         </div>
       </div>
       <TableOrganism

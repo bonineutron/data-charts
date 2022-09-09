@@ -7,6 +7,7 @@ import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { CSVLink } from 'react-csv';
 
 type PropsStateCoursesTemplatee = {
   data: IStateCourseData[];
@@ -113,7 +114,7 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
   return (
     <LayoutOrganism title='Data Charts - State Courses' name='description' content='State courses page.'>
       <div className='flex justify-between items-center mb-4'>
-        <div className='w-[900px] flex justify-between'>
+        <div className='w-[850px] flex justify-between'>
           <Select
             value={category}
             label='Categorias:'
@@ -139,9 +140,12 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
             disabled={!dateOne && true}
           />
         </div>
-        <div className='w-[150px] flex justify-between items-center'>
+        <div className='w-[200px] flex justify-between items-center'>
           <ButtonAtom content='Filtrar' onClick={() => filter(category, dateOne, dateTwo)} customClass='shadow-lg' />
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
+          <CSVLink data={dataTable} className='px-4 py-2 bg-[#1ABC9C] text-white font-semibold rounded-lg shadow-lg'>
+            CSV
+          </CSVLink>
         </div>
       </div>
       <Bar
