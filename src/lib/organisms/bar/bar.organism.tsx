@@ -52,7 +52,7 @@ export default function BarOrganism({ dataBar, labels, title, customClass }: Pro
         {labels.map((label: string, index: number) => (
           <div className='flex items-center gap-1 text-sm' key={index}>
             <span
-              className={`${barGuideColors[index]} w-[30px] py-[2px] flex justify-center items-center text-white leading-none text-[12px] font-semibold rounded-sm`}>
+              className={`${barGuideColors[index]} min-w-[30px] px-2 py-[2px] flex justify-center items-center text-white leading-none text-[12px] font-semibold rounded-sm`}>
               {dataBar[index]}
             </span>
             <span>{label}</span>

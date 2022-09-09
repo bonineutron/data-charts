@@ -27,32 +27,3 @@ export const backgroundColors: string[] = [
   '#95A5A6',
   '#34495E'
 ];
-export const barGuideColors: string[] = [
-  'bg-[#2980B9]',
-  'bg-[#C0392B]',
-  'bg-[#9B59B6]',
-  'bg-[#1ABC9C]',
-  'bg-[#27AE60]',
-  'bg-[#F1C40F]',
-  'bg-[#E67E22]',
-  'bg-[#95A5A6]',
-  'bg-[#34495E]',
-  'bg-[#2980B9]',
-  'bg-[#C0392B]',
-  'bg-[#9B59B6]',
-  'bg-[#1ABC9C]',
-  'bg-[#27AE60]',
-  'bg-[#F1C40F]',
-  'bg-[#E67E22]',
-  'bg-[#95A5A6]',
-  'bg-[#34495E]',
-  'bg-[#2980B9]',
-  'bg-[#C0392B]',
-  'bg-[#9B59B6]',
-  'bg-[#1ABC9C]',
-  'bg-[#27AE60]',
-  'bg-[#F1C40F]',
-  'bg-[#E67E22]',
-  'bg-[#95A5A6]',
-  'bg-[#34495E]'
-];

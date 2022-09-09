@@ -1,5 +1,6 @@
 import { IUniqueLoginsData } from '../../../shared/interfaces/unique-logins.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
+import TotalsCard from '../../atoms/totals-card/totals-card.atom';
 import TableOrganism from '../../organisms/table/table.organism';
 import Button from '../../atoms/button/button.atom';
 import Input from '../../atoms/input/input.atom';
@@ -79,6 +80,7 @@ export default function UniqueLoginsTemplate({ data }: PropsUniqueLoginsTemplate
           <Button content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+      <TotalsCard title={dataTable.length} subTitle='Total de logueos unicos' />
       <TableOrganism
         data={{
           headCells: [

@@ -3,6 +3,7 @@ import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
+import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
 import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
@@ -17,9 +18,14 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
   const [dataTable, setDataTable] = useState<IClickDataCourses[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<any>([]);
+  const [coursesOptions, setCoursesOptions] = useState<any>([]);
   const [category, setCategory] = useState<string>('');
+  const [course, setCourse] = useState<string>('');
   const [dateOne, setdateOne] = useState<string>('');
   const [dateTwo, setdateTwo] = useState<string>('');
+  // bar states
+  const [categoriesBarValues, setCategoriesBarValues] = useState<number[]>([]);
+  const [coursesBarValues, setCoursesBarValues] = useState<number[]>([]);
 
   // effects
   useEffect(() => {
@@ -27,14 +33,49 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
   }, [data]);
   useEffect(() => {
     // categories filtering
-    let categories = dataTable.map((a: IClickDataCourses) => a.Categoria);
+    let categories = dataTable.map((category: IClickDataCourses) => category.Categoria);
     setCategoryOptions(categories.filter((item: string | null, index: number) => categories.indexOf(item) === index));
+    // courses filtering
+    let courses = dataTable.map((course: IClickDataCourses) => course.Nombre_Curso);
+    setCoursesOptions(courses.filter((item: string | null, index: number) => courses.indexOf(item) === index));
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
+  useEffect(() => {
+    // categories data bar chart
+    let separateCategories: IClickDataCourses[][] = [];
+    for (let i: number = 0; i < categoryOptions.length; i++) {
+      separateCategories.push(
+        dataTable.filter((category: IClickDataCourses) => category.Categoria === categoryOptions[i])
+      );
+    }
+    let separateClicks = separateCategories.map((categories: IClickDataCourses[]) =>
+      categories.map((category: IClickDataCourses) => category.Clics)
+    );
+    let completionCount: number[] = separateClicks.map((ending: (number | null)[]) =>
+      ending.reduce((prev: number, curr: number | null) => prev + Number(curr), 0)
+    );
+    setCategoriesBarValues(completionCount);
+  }, [categoryOptions]);
+  useEffect(() => {
+    // courses data bar chart
+    let separateCourses: IClickDataCourses[][] = [];
+    for (let i: number = 0; i < coursesOptions.length; i++) {
+      separateCourses.push(
+        dataTable.filter((category: IClickDataCourses) => category.Nombre_Curso === coursesOptions[i])
+      );
+    }
+    let separateClicks = separateCourses.map((categories: IClickDataCourses[]) =>
+      categories.map((category: IClickDataCourses) => category.Clics)
+    );
+    let completionCount: number[] = separateClicks.map((ending: (number | null)[]) =>
+      ending.reduce((prev: number, curr: number | null) => prev + Number(curr), 0)
+    );
+    setCoursesBarValues(completionCount);
+  }, [coursesOptions]);
 
   // methods
-  const filter = (category: string, dateOne: string, dateTwo: string) => {
+  const filter = (category: string, course: string, dateOne: string, dateTwo: string) => {
     setFilterStarted(true);
     if (category && dateOne && dateTwo) {
       setDataTable(
@@ -45,6 +86,12 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
             course.Fecha.substring(0, 10) >= dateOne &&
             course.Fecha.substring(0, 10) <= dateTwo
         )
+      );
+      return;
+    }
+    if (category && course) {
+      setDataTable(
+        dataTable.filter((access: IClickDataCourses) => access.Categoria === category && access.Nombre_Curso === course)
       );
       return;
     }
@@ -66,6 +113,10 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
       );
       return;
     }
+    if (course) {
+      setDataTable(dataTable.filter((access: IClickDataCourses) => access.Nombre_Curso === course));
+      return;
+    }
     if (category) {
       setDataTable(dataTable.filter((course: IClickDataCourses) => course.Categoria === category));
       return;
@@ -81,6 +132,7 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
     setDataTable([...data]);
     setFilterStarted(false);
     setMessageNotFound(false);
+    setCourse('');
     setCategory('');
     setdateOne('');
     setdateTwo('');
@@ -88,8 +140,16 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
 
   return (
     <LayoutOrganism title='Data Charts - Click Courses' name='description' content='Click courses page.'>
-      <div className='flex justify-between items-center mb-4'>
+      <div className='flex justify-between items-end mb-4'>
         <div className='w-[900px] flex justify-between'>
+          <Select
+            value={course}
+            label='Cursos:'
+            setValue={setCourse}
+            options={coursesOptions ? coursesOptions.map((course: any) => ({ value: course, label: course })) : []}
+            customClass='w-[170px]'
+            flexCol
+          />
           <Select
             value={category}
             label='Categorias:'
@@ -98,6 +158,7 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
               categoryOptions ? categoryOptions.map((category: any) => ({ value: category, label: category })) : []
             }
             customClass='w-[170px]'
+            flexCol
           />
           <Input
             type='date'
@@ -105,6 +166,7 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
             setValue={setdateOne}
             label='Fecha inicio:'
             customClass='w-[170px] uppercase'
+            flexCol
           />
           <Input
             type='date'
@@ -113,13 +175,29 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
             label='Fecha fin:'
             customClass={`${!dateOne ? 'cursor-not-allowed' : ''} w-[170px] uppercase`}
             disabled={!dateOne && true}
+            flexCol
           />
         </div>
         <div className='w-[150px] flex justify-between items-center'>
-          <ButtonAtom content='Filtrar' onClick={() => filter(category, dateOne, dateTwo)} customClass='shadow-lg' />
+          <ButtonAtom
+            content='Filtrar'
+            onClick={() => filter(category, course, dateOne, dateTwo)}
+            customClass='shadow-lg'
+          />
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
         </div>
       </div>
+
+      <Bar
+        dataBar={categoriesBarValues}
+        labels={categoryOptions.map((category: string | null) => (category === null ? 'null' : category))}
+        title='Total de Clics por Categoria'
+      />
+      <Bar
+        dataBar={coursesBarValues}
+        labels={coursesOptions.map((category: string | null) => (category === null ? 'null' : category))}
+        title='Total de Clics por Curso'
+      />
       <TableOrganism
         data={{
           headCells: [

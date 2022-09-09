@@ -30,10 +30,10 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
   }, [data]);
   useEffect(() => {
     // module filtering
-    let categories = dataTable.map((a: ILastAccessData) => a.Categoria);
+    let categories = dataTable.map((category: ILastAccessData) => category.Categoria);
     setCategoriesOptions(categories.filter((item: string | null, index: number) => categories.indexOf(item) === index));
     // courses filtering
-    let courses = dataTable.map((a: ILastAccessData) => a.curso);
+    let courses = dataTable.map((course: ILastAccessData) => course.curso);
     setCoursesOptions(courses.filter((item: string | null, index: number) => courses.indexOf(item) === index));
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
