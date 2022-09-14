@@ -18,9 +18,9 @@ export default function InputAtom({
   min,
   max,
   disabled,
+  placeHolder,
   customClass,
   flexCol,
-  placeHolder,
   setValue
 }: PropsInputAtom) {
   return (

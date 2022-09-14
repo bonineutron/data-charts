@@ -19,3 +19,9 @@ export interface IUserData {
   Minuto2: number | null;
   usuarios_online: number | null;
 }
+
+export interface IDataChart {
+  day: number | null;
+  cellId: number | null;
+  users: number;
+}
