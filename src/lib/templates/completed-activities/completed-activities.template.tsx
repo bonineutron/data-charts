@@ -1,18 +1,23 @@
 import { ICompletedActivitiesData } from '../../../shared/interfaces/completed-activities.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsCompletedActivitiesTemplate = {
   data: ICompletedActivitiesData[];
 };
 
 export default function CompletedActivitiesTemplate({ data }: PropsCompletedActivitiesTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -98,6 +103,21 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
     setCourse('');
     setCategory('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 410]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 400);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Completed Activities' name='description' content='Completed activities page.'>
@@ -128,57 +148,66 @@ export default function CompletedActivitiesTemplate({ data }: PropsCompletedActi
           </CSVLink>
         </div>
       </div>
-      <Bar dataBar={coursesBarValues} labels={coursesOptions} title='Finalizados por Cursos' />
-      <Bar dataBar={categoriesBarValues} labels={categoriesOptions} title='Finalizados por Categorias' />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'id', width: 'w-[50px]' },
-            { content: 'Usuario', width: 'w-[110px]' },
-            { content: 'Nombre', width: 'w-[200px]' },
-            { content: 'Apellido', width: 'w-[200px]' },
-            { content: 'Email', width: 'w-[350px]' },
-            { content: 'city', width: 'w-[200px]' },
-            { content: 'country', width: 'w-[100px]' },
-            { content: 'theme', width: 'w-[100px]' },
-            { content: 'idCurso', width: 'w-[100px]' },
-            { content: 'idseccion', width: 'w-[100px]' },
-            { content: 'Seccion', width: 'w-[400px]' },
-            { content: 'Curso', width: 'w-[400px]' },
-            { content: 'tipo_curso', width: 'w-[200px]' },
-            { content: 'Categoria', width: 'w-[200px]' },
-            { content: 'Categoria1', width: 'w-[200px]' },
-            { content: 'cursocorto', width: 'w-[200px]' },
-            { content: 'Actividad', width: 'w-[400px]' },
-            { content: 'orden_actividad', width: 'w-[150px]' },
-            { content: 'tipo', width: 'w-[100px]' },
-            { content: 'Finalizacion', width: 'w-[100px]' }
-          ],
-          bodyCells: dataTable.map((activity: ICompletedActivitiesData) => [
-            { content: activity.id, width: 'w-[50px]' },
-            { content: activity.Usuario, width: 'w-[110px]' },
-            { content: activity.Nombre, width: 'w-[200px]' },
-            { content: activity.Apellido, width: 'w-[200px]' },
-            { content: activity.Email, width: 'w-[350px]' },
-            { content: activity.city, width: 'w-[200px]' },
-            { content: activity.country, width: 'w-[100px]' },
-            { content: activity.theme, width: 'w-[100px]' },
-            { content: activity.idCurso, width: 'w-[100px]' },
-            { content: activity.idseccion, width: 'w-[100px]' },
-            { content: activity.Seccion, width: 'w-[400px]' },
-            { content: activity.Curso, width: 'w-[400px]' },
-            { content: activity.tipo_curso, width: 'w-[200px]' },
-            { content: activity.Categoria, width: 'w-[200px]' },
-            { content: activity.Categoria1, width: 'w-[200px]' },
-            { content: activity.cursocorto, width: 'w-[200px]' },
-            { content: activity.Actividad, width: 'w-[400px]' },
-            { content: activity.orden_actividad, width: 'w-[150px]' },
-            { content: activity.tipo, width: 'w-[100px]' },
-            { content: activity.Finalizacion, width: 'w-[100px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <Bar dataBar={coursesBarValues} labels={coursesOptions} title='Finalizados por Cursos' />
+        <Bar dataBar={categoriesBarValues} labels={categoriesOptions} title='Finalizados por Categorias' />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'id', width: 'w-[50px]' },
+              { content: 'Usuario', width: 'w-[110px]' },
+              { content: 'Nombre', width: 'w-[200px]' },
+              { content: 'Apellido', width: 'w-[200px]' },
+              { content: 'Email', width: 'w-[350px]' },
+              { content: 'city', width: 'w-[200px]' },
+              { content: 'country', width: 'w-[100px]' },
+              { content: 'theme', width: 'w-[100px]' },
+              { content: 'idCurso', width: 'w-[100px]' },
+              { content: 'idseccion', width: 'w-[100px]' },
+              { content: 'Seccion', width: 'w-[400px]' },
+              { content: 'Curso', width: 'w-[400px]' },
+              { content: 'tipo_curso', width: 'w-[200px]' },
+              { content: 'Categoria', width: 'w-[200px]' },
+              { content: 'Categoria1', width: 'w-[200px]' },
+              { content: 'cursocorto', width: 'w-[200px]' },
+              { content: 'Actividad', width: 'w-[400px]' },
+              { content: 'orden_actividad', width: 'w-[150px]' },
+              { content: 'tipo', width: 'w-[100px]' },
+              { content: 'Finalizacion', width: 'w-[100px]' }
+            ],
+            bodyCells: dataTable.map((activity: ICompletedActivitiesData) => [
+              { content: activity.id, width: 'w-[50px]' },
+              { content: activity.Usuario, width: 'w-[110px]' },
+              { content: activity.Nombre, width: 'w-[200px]' },
+              { content: activity.Apellido, width: 'w-[200px]' },
+              { content: activity.Email, width: 'w-[350px]' },
+              { content: activity.city, width: 'w-[200px]' },
+              { content: activity.country, width: 'w-[100px]' },
+              { content: activity.theme, width: 'w-[100px]' },
+              { content: activity.idCurso, width: 'w-[100px]' },
+              { content: activity.idseccion, width: 'w-[100px]' },
+              { content: activity.Seccion, width: 'w-[400px]' },
+              { content: activity.Curso, width: 'w-[400px]' },
+              { content: activity.tipo_curso, width: 'w-[200px]' },
+              { content: activity.Categoria, width: 'w-[200px]' },
+              { content: activity.Categoria1, width: 'w-[200px]' },
+              { content: activity.cursocorto, width: 'w-[200px]' },
+              { content: activity.Actividad, width: 'w-[400px]' },
+              { content: activity.orden_actividad, width: 'w-[150px]' },
+              { content: activity.tipo, width: 'w-[100px]' },
+              { content: activity.Finalizacion, width: 'w-[100px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

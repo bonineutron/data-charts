@@ -1,19 +1,24 @@
 import { IClickDataCourses } from '../../../shared/interfaces/click-courses.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsClickCoursesTemplate = {
   data: IClickDataCourses[];
 };
 
 export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -138,6 +143,21 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
     setdateOne('');
     setdateTwo('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 410]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 400);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Click Courses' name='description' content='Click courses page.'>
@@ -191,49 +211,58 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
           </CSVLink>
         </div>
       </div>
-      <Bar
-        dataBar={categoriesBarValues}
-        labels={categoryOptions.map((category: string | null) => (category === null ? 'null' : category))}
-        title='Total de Clics por Categoria'
-      />
-      <Bar
-        dataBar={coursesBarValues}
-        labels={coursesOptions.map((category: string | null) => (category === null ? 'null' : category))}
-        title='Total de Clics por Curso'
-      />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'id', width: 'w-[50px]' },
-            { content: 'Nombre_Corto', width: 'w-[150px]' },
-            { content: 'Nombre_Curso', width: 'w-[400px]' },
-            { content: 'Categoria', width: 'w-[200px]' },
-            { content: 'Categoria1', width: 'w-[150px]' },
-            { content: 'tipo_curso', width: 'w-[150px]' },
-            { content: 'Fecha', width: 'w-[200px]' },
-            { content: 'Anio', width: 'w-[100px]' },
-            { content: 'Mes', width: 'w-[100px]' },
-            { content: 'Dia', width: 'w-[100px]' },
-            { content: 'Usuarios', width: 'w-[100px]' },
-            { content: 'Clics', width: 'w-[100px]' }
-          ],
-          bodyCells: dataTable.map((course: IClickDataCourses) => [
-            { content: course.id, width: 'w-[50px]' },
-            { content: course.Nombre_Corto, width: 'w-[150px]' },
-            { content: course.Nombre_Curso, width: 'w-[400px]' },
-            { content: course.Categoria, width: 'w-[200px]' },
-            { content: course.Categoria1, width: 'w-[150px]' },
-            { content: course.tipo_curso, width: 'w-[150px]' },
-            { content: course.Fecha, width: 'w-[200px]' },
-            { content: course.Anio, width: 'w-[100px]' },
-            { content: course.Mes, width: 'w-[100px]' },
-            { content: course.Dia, width: 'w-[100px]' },
-            { content: course.Usuarios, width: 'w-[100px]' },
-            { content: course.Clics, width: 'w-[100px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <Bar
+          dataBar={categoriesBarValues}
+          labels={categoryOptions.map((category: string | null) => (category === null ? 'null' : category))}
+          title='Total de Clics por Categoria'
+        />
+        <Bar
+          dataBar={coursesBarValues}
+          labels={coursesOptions.map((category: string | null) => (category === null ? 'null' : category))}
+          title='Total de Clics por Curso'
+        />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'id', width: 'w-[50px]' },
+              { content: 'Nombre_Corto', width: 'w-[150px]' },
+              { content: 'Nombre_Curso', width: 'w-[400px]' },
+              { content: 'Categoria', width: 'w-[200px]' },
+              { content: 'Categoria1', width: 'w-[150px]' },
+              { content: 'tipo_curso', width: 'w-[150px]' },
+              { content: 'Fecha', width: 'w-[200px]' },
+              { content: 'Anio', width: 'w-[100px]' },
+              { content: 'Mes', width: 'w-[100px]' },
+              { content: 'Dia', width: 'w-[100px]' },
+              { content: 'Usuarios', width: 'w-[100px]' },
+              { content: 'Clics', width: 'w-[100px]' }
+            ],
+            bodyCells: dataTable.map((course: IClickDataCourses) => [
+              { content: course.id, width: 'w-[50px]' },
+              { content: course.Nombre_Corto, width: 'w-[150px]' },
+              { content: course.Nombre_Curso, width: 'w-[400px]' },
+              { content: course.Categoria, width: 'w-[200px]' },
+              { content: course.Categoria1, width: 'w-[150px]' },
+              { content: course.tipo_curso, width: 'w-[150px]' },
+              { content: course.Fecha, width: 'w-[200px]' },
+              { content: course.Anio, width: 'w-[100px]' },
+              { content: course.Mes, width: 'w-[100px]' },
+              { content: course.Dia, width: 'w-[100px]' },
+              { content: course.Usuarios, width: 'w-[100px]' },
+              { content: course.Clics, width: 'w-[100px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

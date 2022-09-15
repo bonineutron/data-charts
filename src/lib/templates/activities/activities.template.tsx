@@ -1,18 +1,23 @@
 import { IActivityData } from '../../../shared/interfaces/activities.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsActivitiesTemplate = {
   data: IActivityData[];
 };
 
 export default function ActivitiesTemplate({ data }: PropsActivitiesTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -69,6 +74,21 @@ export default function ActivitiesTemplate({ data }: PropsActivitiesTemplate): J
     setCourse(0);
     setModule('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 290]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 280);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Activities' name='description' content='Activities page.'>
@@ -97,28 +117,37 @@ export default function ActivitiesTemplate({ data }: PropsActivitiesTemplate): J
           </CSVLink>
         </div>
       </div>
-      <Bar dataBar={barValues} labels={modulesOptions} title='Total de Modulos' />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'Id', width: 'w-[80px]' },
-            { content: 'Course', width: 'w-[100px]' },
-            { content: 'Module', width: 'w-[100px]' },
-            { content: 'Modulo', width: 'w-[100px]' },
-            { content: 'Idcmodules', width: 'w-[200px]' },
-            { content: 'Name', width: 'w-[400px]' }
-          ],
-          bodyCells: dataTable.map((activity: IActivityData) => [
-            { content: activity.id, width: 'w-[80px]' },
-            { content: activity.course, width: 'w-[100px]' },
-            { content: activity.module, width: 'w-[100px]' },
-            { content: activity.modulo, width: 'w-[100px]' },
-            { content: activity.idcmodules, width: 'w-[200px]' },
-            { content: activity.name, width: 'w-[400px] truncate' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <Bar dataBar={barValues} labels={modulesOptions} title='Total de Modulos' />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'Id', width: 'w-[80px]' },
+              { content: 'Course', width: 'w-[100px]' },
+              { content: 'Module', width: 'w-[100px]' },
+              { content: 'Modulo', width: 'w-[100px]' },
+              { content: 'Idcmodules', width: 'w-[200px]' },
+              { content: 'Name', width: 'w-[400px]' }
+            ],
+            bodyCells: dataTable.map((activity: IActivityData) => [
+              { content: activity.id, width: 'w-[80px]' },
+              { content: activity.course, width: 'w-[100px]' },
+              { content: activity.module, width: 'w-[100px]' },
+              { content: activity.modulo, width: 'w-[100px]' },
+              { content: activity.idcmodules, width: 'w-[200px]' },
+              { content: activity.name, width: 'w-[400px] truncate' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

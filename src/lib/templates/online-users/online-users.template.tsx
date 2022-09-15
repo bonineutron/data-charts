@@ -2,19 +2,24 @@ import { IUserData, IDataChart } from '../../../shared/interfaces/online-users.i
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import { Months } from '../../../shared/enums/online-users.enum';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Select from '../../atoms/select/select.atom';
 import Button from '../../atoms/button/button.atom';
 import Input from '../../atoms/input/input.atom';
 import { FiUser, FiUsers } from 'react-icons/fi';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsOnlineUsersTemplate = {
   data: IUserData[];
 };
 
 export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // consts
   const currentDate = new Date();
   const classDays =
@@ -134,6 +139,21 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
     if (users >= 120) return 'bg-[#CD6155] text-white';
     return 'bg-[#FCF3CF] text-gray-500';
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 290]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 280);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Online Users' name='description' content='Online users page.'>
@@ -169,87 +189,98 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
           </CSVLink>
         </div>
       </div>
-      <div className='mb-2'>
-        <h2 className='w-fit mx-auto font-semibold text-[20px] my-2'>{dateLabel}</h2>
-        <ol className='grid grid-cols-7'>
-          <li className={classDays}>Lun</li>
-          <li className={classDays}>Mar</li>
-          <li className={classDays}>Mie</li>
-          <li className={classDays}>Jue</li>
-          <li className={classDays}>Vie</li>
-          <li className={classDays}>Sab</li>
-          <li className={`${classDays} border-r-[1px]`}>Dom</li>
-          {cellsChart.map((cell: number) => (
-            <li
-              key={cell}
-              className={`h-[60px] border-b-[1px] border-l-[1px] ${
-                cell === 6 || cell === 13 || cell === 20 || cell === 27 || cell === 34 || cell === 41
-                  ? 'border-r-[1px]'
-                  : ''
-              }`}>
-              {dataChart.map(
-                (day: IDataChart) =>
-                  cell === day.cellId && (
-                    <div className={`relative h-full w-full flex flex-col justify-between ${usersColors(day.users)}`}>
-                      <span className='pr-2 text-right text-gray-400 italic text-sm'>{day.day}</span>
-                      <span className='absolute h-full w-full flex items-center justify-center gap-1 font-semibold'>
-                        {day.users === 1 ? <FiUser className='text-[20px]' /> : <FiUsers className='text-[20px]' />}
-                        {day.users}
-                      </span>
-                    </div>
-                  )
-              )}
-            </li>
-          ))}
-        </ol>
+      <div className='w-full h-full' ref={ref}>
+        <div className='mb-2'>
+          <h2 className='w-fit mx-auto font-semibold text-[20px] my-2'>{dateLabel}</h2>
+          <ol className='grid grid-cols-7'>
+            <li className={classDays}>Lun</li>
+            <li className={classDays}>Mar</li>
+            <li className={classDays}>Mie</li>
+            <li className={classDays}>Jue</li>
+            <li className={classDays}>Vie</li>
+            <li className={classDays}>Sab</li>
+            <li className={`${classDays} border-r-[1px]`}>Dom</li>
+            {cellsChart.map((cell: number) => (
+              <li
+                key={cell}
+                className={`h-[60px] border-b-[1px] border-l-[1px] ${
+                  cell === 6 || cell === 13 || cell === 20 || cell === 27 || cell === 34 || cell === 41
+                    ? 'border-r-[1px]'
+                    : ''
+                }`}>
+                {dataChart.map(
+                  (day: IDataChart) =>
+                    cell === day.cellId && (
+                      <div
+                        key={cell}
+                        className={`relative h-full w-full flex flex-col justify-between ${usersColors(day.users)}`}>
+                        <span className='pr-2 text-right text-gray-400 italic text-sm'>{day.day}</span>
+                        <span className='absolute h-full w-full flex items-center justify-center gap-1 font-semibold'>
+                          {day.users === 1 ? <FiUser className='text-[20px]' /> : <FiUsers className='text-[20px]' />}
+                          {day.users}
+                        </span>
+                      </div>
+                    )
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'Fecha', width: 'w-[200px]' },
+              { content: 'Anio', width: 'w-[100px]' },
+              { content: 'Mes', width: 'w-[100px]' },
+              { content: 'Semana', width: 'w-[100px]' },
+              { content: 'Dia', width: 'w-[100px]' },
+              { content: 'Dia_semana', width: 'w-[150px]' },
+              { content: 'Tiempo', width: 'w-[100px]' },
+              { content: 'Hora', width: 'w-[100px]' },
+              { content: 'Minuto', width: 'w-[100px]' },
+              { content: 'Fecha2', width: 'w-[200px]' },
+              { content: 'Anio2', width: 'w-[100px]' },
+              { content: 'Mes2', width: 'w-[100px]' },
+              { content: 'Semana2', width: 'w-[100px]' },
+              { content: 'Dia2', width: 'w-[100px]' },
+              { content: 'Dia_semana2', width: 'w-[150px]' },
+              { content: 'Tiempo2', width: 'w-[100px]' },
+              { content: 'Hora2', width: 'w-[100px]' },
+              { content: 'Minuto2', width: 'w-[100px]' },
+              { content: 'usuarios_online', width: 'w-[150px]' }
+            ],
+            bodyCells: dataTable.map((user: IUserData) => [
+              { content: user.Fecha, width: 'w-[200px]' },
+              { content: user.Anio, width: 'w-[100px]' },
+              { content: user.Mes, width: 'w-[100px]' },
+              { content: user.Semana, width: 'w-[100px]' },
+              { content: user.Dia, width: 'w-[100px]' },
+              { content: user.Dia_semana, width: 'w-[150px]' },
+              { content: user.Tiempo, width: 'w-[100px]' },
+              { content: user.Hora, width: 'w-[100px]' },
+              { content: user.Minuto, width: 'w-[100px]' },
+              { content: user.Fecha2, width: 'w-[200px]' },
+              { content: user.Anio2, width: 'w-[100px]' },
+              { content: user.Mes2, width: 'w-[100px]' },
+              { content: user.Semana2, width: 'w-[100px]' },
+              { content: user.Dia2, width: 'w-[100px]' },
+              { content: user.Dia_semana2, width: 'w-[150px]' },
+              { content: user.Tiempo2, width: 'w-[100px]' },
+              { content: user.Hora2, width: 'w-[100px]' },
+              { content: user.Minuto2, width: 'w-[100px]' },
+              { content: user.usuarios_online, width: 'w-[150px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
       </div>
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'Fecha', width: 'w-[200px]' },
-            { content: 'Anio', width: 'w-[100px]' },
-            { content: 'Mes', width: 'w-[100px]' },
-            { content: 'Semana', width: 'w-[100px]' },
-            { content: 'Dia', width: 'w-[100px]' },
-            { content: 'Dia_semana', width: 'w-[150px]' },
-            { content: 'Tiempo', width: 'w-[100px]' },
-            { content: 'Hora', width: 'w-[100px]' },
-            { content: 'Minuto', width: 'w-[100px]' },
-            { content: 'Fecha2', width: 'w-[200px]' },
-            { content: 'Anio2', width: 'w-[100px]' },
-            { content: 'Mes2', width: 'w-[100px]' },
-            { content: 'Semana2', width: 'w-[100px]' },
-            { content: 'Dia2', width: 'w-[100px]' },
-            { content: 'Dia_semana2', width: 'w-[150px]' },
-            { content: 'Tiempo2', width: 'w-[100px]' },
-            { content: 'Hora2', width: 'w-[100px]' },
-            { content: 'Minuto2', width: 'w-[100px]' },
-            { content: 'usuarios_online', width: 'w-[150px]' }
-          ],
-          bodyCells: dataTable.map((user: IUserData) => [
-            { content: user.Fecha, width: 'w-[200px]' },
-            { content: user.Anio, width: 'w-[100px]' },
-            { content: user.Mes, width: 'w-[100px]' },
-            { content: user.Semana, width: 'w-[100px]' },
-            { content: user.Dia, width: 'w-[100px]' },
-            { content: user.Dia_semana, width: 'w-[150px]' },
-            { content: user.Tiempo, width: 'w-[100px]' },
-            { content: user.Hora, width: 'w-[100px]' },
-            { content: user.Minuto, width: 'w-[100px]' },
-            { content: user.Fecha2, width: 'w-[200px]' },
-            { content: user.Anio2, width: 'w-[100px]' },
-            { content: user.Mes2, width: 'w-[100px]' },
-            { content: user.Semana2, width: 'w-[100px]' },
-            { content: user.Dia2, width: 'w-[100px]' },
-            { content: user.Dia_semana2, width: 'w-[150px]' },
-            { content: user.Tiempo2, width: 'w-[100px]' },
-            { content: user.Hora2, width: 'w-[100px]' },
-            { content: user.Minuto2, width: 'w-[100px]' },
-            { content: user.usuarios_online, width: 'w-[150px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='text-center'>
+        <Button
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

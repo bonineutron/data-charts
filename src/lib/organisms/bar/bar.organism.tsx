@@ -9,7 +9,7 @@ type PropsBarOrganism = {
   customClass?: string;
 };
 
-const barGuideColors: string[] = [
+export const barGuideColors: string[] = [
   'bg-[#2980B9]',
   'bg-[#C0392B]',
   'bg-[#9B59B6]',
@@ -46,7 +46,9 @@ export default function BarOrganism({ dataBar, labels, title, customClass }: Pro
   return (
     <div className={`w-full rounded-lg shadow-lg mb-4 bg-gray-100 ${customClass || ''}`}>
       {title && (
-        <h2 className='w-[90%] pt-3 mx-auto font-semibold text-center text-[20px] border-b border-gray-300'>{title}</h2>
+        <h2 className='w-[90%] pt-3 pb-3 mx-auto font-semibold text-center text-[20px] leading-none border-b border-gray-300'>
+          {title}
+        </h2>
       )}
       <div className='w-fit mx-auto px-10 pt-3 flex flex-wrap gap-y-[1px] gap-x-3'>
         {labels.map((label: string, index: number) => (

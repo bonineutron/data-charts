@@ -1,98 +1,159 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale } from 'chart.js';
-import { IUserData } from '../../../shared/interfaces/online-users.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
-
-import { Doughnut, PolarArea, Pie } from 'react-chartjs-2';
+import { barGuideColors } from '../../organisms/bar/bar.organism';
+import { BiRightArrowCircle } from 'react-icons/bi';
+import Link from 'next/link';
 
 export default function MainTemplate(): JSX.Element {
-  // settings
-  ChartJS.register(ArcElement, RadialLinearScale, Tooltip, Legend);
-
-  // refactor
-  // const doughnutLabels: string[] = ['Artisan', 'Bars and Restaurants', 'Beauty Professionals'];
-  // const doughnutBorderColor: string[] = ['#FFF', '#FFF', '#FFF'];
-  // const doughnutBackgroundColor: string[] = [
-  //   'rgba(255, 99, 132, 0.5)',
-  //   'rgba(54, 162, 235, 0.5)',
-  //   'rgba(255, 206, 86, 0.5)'
-  // ];
-  // const artisanFilter: IUserData[] = userDataMock.filter((user: IUserData) => user.Anio === 1);
-  // const beautyProfessionalsFilter: IUserData[] = userDataMock.filter((user: IUserData) => user.Anio === 2);
-  // const BarsRestaurantsFilter: IUserData[] = userDataMock.filter((user: IUserData) => user.Anio === 1);
-
   return (
     <LayoutOrganism
       title='Data Charts'
       name='description'
       content='Main page this app, dashboard view. Charts of all business data.'>
-      {/* <div className='w-full flex flex-col flex-wrap items-center justify-between gap-10 lg:flex-row'>
-        <div className='w-[300px] py-4 rounded-lg shadow-lg'>
-          <PolarArea
-            data={{
-              labels: doughnutLabels,
-              datasets: [
-                {
-                  label: 'user classification',
-                  data: [
-                    artisanFilter.length,
-                    BarsRestaurantsFilter.length,
-                    beautyProfessionalsFilter.length
-                  ],
-                  backgroundColor: [
-                    'rgba(255, 99, 132, 0.5)',
-                    'rgba(54, 162, 235, 0.5)',
-                    'rgba(255, 206, 86, 0.5)'
-                  ],
-                  borderWidth: 0
-                }
-              ]
-            }}
-          />
-        </div>
-        <div className='w-[300px] py-4 rounded-lg shadow-lg'>
-          <Doughnut
-            data={{
-              labels: doughnutLabels,
-              datasets: [
-                {
-                  label: 'user classification',
-                  data: [
-                    artisanFilter.length,
-                    BarsRestaurantsFilter.length,
-                    beautyProfessionalsFilter.length
-                  ],
-                  backgroundColor: doughnutBackgroundColor,
-                  borderColor: doughnutBorderColor,
-                  borderWidth: 4
-                }
-              ]
-            }}
-          />
-        </div>
-        <div className='w-[300px] py-4 rounded-lg shadow-lg'>
-          <Pie
-            data={{
-              labels: doughnutLabels,
-              datasets: [
-                {
-                  label: 'user classification',
-                  data: [
-                    artisanFilter.length,
-                    BarsRestaurantsFilter.length,
-                    beautyProfessionalsFilter.length
-                  ],
-                  backgroundColor: [
-                    'rgba(255, 99, 132, 0.5)',
-                    'rgba(54, 162, 235, 0.5)',
-                    'rgba(255, 206, 86, 0.5)'
-                  ],
-                  borderWidth: 0
-                }
-              ]
-            }}
-          />
-        </div>
-      </div> */}
+      <div className='flex flex-wrap gap-6 mt-10'>
+        <Link href='/activities'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[0]}`}>
+              <span className='text-[20px] font-semibold'>Actividades</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/courses'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[1]}`}>
+              <span className='text-[20px] font-semibold'>Cursos</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/completed-activities'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[2]}`}>
+              <span className='text-[20px] font-semibold'>Actividades finalizadas</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/click-courses'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[3]}`}>
+              <span className='text-[20px] font-semibold'>Clic por cursos</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/completed-courses'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[4]}`}>
+              <span className='text-[20px] font-semibold'>Cursos finalizados</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/state-courses'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[5]}`}>
+              <span className='text-[20px] font-semibold'>Estado cursos</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/evaluations'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[6]}`}>
+              <span className='text-[20px] font-semibold'>Evaluaciones</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/logins'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[7]}`}>
+              <span className='text-[20px] font-semibold'>Logueos</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/unique-logins'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[12]}`}>
+              <span className='text-[20px] font-semibold'>Logueos unicos</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/student-enrollment'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[8]}`}>
+              <span className='text-[20px] font-semibold'>Matriculas estudiantes</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/not-access'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[9]}`}>
+              <span className='text-[20px] font-semibold'>No acceden</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/last-access'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[10]}`}>
+              <span className='text-[20px] font-semibold'>Ultimo acceso</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/online-users'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[11]}`}>
+              <span className='text-[20px] font-semibold'>Usuarios en línea</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+      </div>
     </LayoutOrganism>
   );
 }

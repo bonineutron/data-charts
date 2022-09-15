@@ -1,19 +1,24 @@
 import { IStateCourseData } from '../../../shared/interfaces/state-courses.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsStateCoursesTemplatee = {
   data: IStateCourseData[];
 };
 
 export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplatee): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -110,6 +115,21 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
     setdateOne('');
     setdateTwo('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 290]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 280);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - State Courses' name='description' content='State courses page.'>
@@ -148,36 +168,45 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
           </CSVLink>
         </div>
       </div>
-      <Bar
-        dataBar={categoriesBarValues}
-        labels={categoryOptions.map((category: string | null) => (category === null ? 'null' : category))}
-        title='Cantidad de Cursos Activos por Categoria'
-      />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'Curso', width: 'w-[300px]' },
-            { content: 'Codigo_curso', width: 'w-[150px]' },
-            { content: 'fecha_creacion', width: 'w-[200px]' },
-            { content: 'fecha_inicio', width: 'w-[200px]' },
-            { content: 'fecha_cierre', width: 'w-[200px]' },
-            { content: 'Estado', width: 'w-[100px]' },
-            { content: 'Categoria', width: 'w-[200px]' },
-            { content: 'tipo_curso', width: 'w-[100px]' }
-          ],
-          bodyCells: dataTable.map((course: IStateCourseData) => [
-            { content: course.Curso, width: 'w-[300px]' },
-            { content: course.Codigo_curso, width: 'w-[150px]' },
-            { content: course.fecha_creacion, width: 'w-[200px]' },
-            { content: course.fecha_inicio, width: 'w-[200px]' },
-            { content: course.fecha_cierre, width: 'w-[200px]' },
-            { content: course.Estado, width: 'w-[100px]' },
-            { content: course.Categoria, width: 'w-[200px]' },
-            { content: course.tipo_curso, width: 'w-[100px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <Bar
+          dataBar={categoriesBarValues}
+          labels={categoryOptions.map((category: string | null) => (category === null ? 'null' : category))}
+          title='Cantidad de Cursos Activos por Categoria'
+        />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'Curso', width: 'w-[300px]' },
+              { content: 'Codigo_curso', width: 'w-[150px]' },
+              { content: 'fecha_creacion', width: 'w-[200px]' },
+              { content: 'fecha_inicio', width: 'w-[200px]' },
+              { content: 'fecha_cierre', width: 'w-[200px]' },
+              { content: 'Estado', width: 'w-[100px]' },
+              { content: 'Categoria', width: 'w-[200px]' },
+              { content: 'tipo_curso', width: 'w-[100px]' }
+            ],
+            bodyCells: dataTable.map((course: IStateCourseData) => [
+              { content: course.Curso, width: 'w-[300px]' },
+              { content: course.Codigo_curso, width: 'w-[150px]' },
+              { content: course.fecha_creacion, width: 'w-[200px]' },
+              { content: course.fecha_inicio, width: 'w-[200px]' },
+              { content: course.fecha_cierre, width: 'w-[200px]' },
+              { content: course.Estado, width: 'w-[100px]' },
+              { content: course.Categoria, width: 'w-[200px]' },
+              { content: course.tipo_curso, width: 'w-[100px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

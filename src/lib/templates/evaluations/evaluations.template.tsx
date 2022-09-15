@@ -1,18 +1,23 @@
 import { IEvaluations } from '../../../shared/interfaces/evaluations.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsEvaluationsTemplate = {
   data: IEvaluations[];
 };
 
 export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -110,6 +115,21 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
     setCourse('');
     setCategory('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 410]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 400);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Evaluations' name='description' content='Evaluations page.'>
@@ -140,59 +160,68 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
           </CSVLink>
         </div>
       </div>
-      <Bar dataBar={coursesBarValues} labels={coursesOptions} title='Promedio de Notas por Cursos' />
-      <Bar dataBar={categoriesBarValues} labels={categoriesOptions} title='Promedio de Notas por Categorias' />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'id', width: 'w-[80px]' },
-            { content: 'Usuario', width: 'w-[110px]' },
-            { content: 'Nombre', width: 'w-[200px]' },
-            { content: 'Apellido', width: 'w-[200px]' },
-            { content: 'Email', width: 'w-[350px]' },
-            { content: 'city', width: 'w-[200px]' },
-            { content: 'country', width: 'w-[100px]' },
-            { content: 'theme', width: 'w-[100px]' },
-            { content: 'idCurso', width: 'w-[100px]' },
-            { content: 'idmodules', width: 'w-[100px]' },
-            { content: 'idseccion', width: 'w-[100px]' },
-            { content: 'seccion', width: 'w-[100px]' },
-            { content: 'Curso', width: 'w-[400px]' },
-            { content: 'cursocorto', width: 'w-[110px]' },
-            { content: 'Categoria', width: 'w-[200px]' },
-            { content: 'Categoria1', width: 'w-[150px]' },
-            { content: 'Evaluacion', width: 'w-[400px]' },
-            { content: 'Nota', width: 'w-[100px]' },
-            { content: 'Objetivo', width: 'w-[100px]' },
-            { content: 'Porcentaje', width: 'w-[150px]' },
-            { content: 'tipo_curso', width: 'w-[150px]' }
-          ],
-          bodyCells: dataTable.map((evaluation: IEvaluations) => [
-            { content: evaluation.id, width: 'w-[80px]' },
-            { content: evaluation.Usuario, width: 'w-[110px]' },
-            { content: evaluation.Nombre, width: 'w-[200px]' },
-            { content: evaluation.Apellido, width: 'w-[200px]' },
-            { content: evaluation.Email, width: 'w-[350px]' },
-            { content: evaluation.city, width: 'w-[200px]' },
-            { content: evaluation.country, width: 'w-[100px]' },
-            { content: evaluation.theme, width: 'w-[100px]' },
-            { content: evaluation.idCurso, width: 'w-[100px]' },
-            { content: evaluation.idmodules, width: 'w-[100px]' },
-            { content: evaluation.idseccion, width: 'w-[100px]' },
-            { content: evaluation.seccion, width: 'w-[100px]' },
-            { content: evaluation.Curso, width: 'w-[400px]' },
-            { content: evaluation.cursocorto, width: 'w-[110px]' },
-            { content: evaluation.Categoria, width: 'w-[200px]' },
-            { content: evaluation.Categoria1, width: 'w-[150px]' },
-            { content: evaluation.Evaluacion, width: 'w-[400px]' },
-            { content: evaluation.Nota, width: 'w-[100px]' },
-            { content: evaluation.Objetivo, width: 'w-[100px]' },
-            { content: evaluation.Porcentaje, width: 'w-[150px]' },
-            { content: evaluation.tipo_curso, width: 'w-[150px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <Bar dataBar={coursesBarValues} labels={coursesOptions} title='Promedio de Notas por Cursos' />
+        <Bar dataBar={categoriesBarValues} labels={categoriesOptions} title='Promedio de Notas por Categorias' />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'id', width: 'w-[80px]' },
+              { content: 'Usuario', width: 'w-[110px]' },
+              { content: 'Nombre', width: 'w-[200px]' },
+              { content: 'Apellido', width: 'w-[200px]' },
+              { content: 'Email', width: 'w-[350px]' },
+              { content: 'city', width: 'w-[200px]' },
+              { content: 'country', width: 'w-[100px]' },
+              { content: 'theme', width: 'w-[100px]' },
+              { content: 'idCurso', width: 'w-[100px]' },
+              { content: 'idmodules', width: 'w-[100px]' },
+              { content: 'idseccion', width: 'w-[100px]' },
+              { content: 'seccion', width: 'w-[100px]' },
+              { content: 'Curso', width: 'w-[400px]' },
+              { content: 'cursocorto', width: 'w-[110px]' },
+              { content: 'Categoria', width: 'w-[200px]' },
+              { content: 'Categoria1', width: 'w-[150px]' },
+              { content: 'Evaluacion', width: 'w-[400px]' },
+              { content: 'Nota', width: 'w-[100px]' },
+              { content: 'Objetivo', width: 'w-[100px]' },
+              { content: 'Porcentaje', width: 'w-[150px]' },
+              { content: 'tipo_curso', width: 'w-[150px]' }
+            ],
+            bodyCells: dataTable.map((evaluation: IEvaluations) => [
+              { content: evaluation.id, width: 'w-[80px]' },
+              { content: evaluation.Usuario, width: 'w-[110px]' },
+              { content: evaluation.Nombre, width: 'w-[200px]' },
+              { content: evaluation.Apellido, width: 'w-[200px]' },
+              { content: evaluation.Email, width: 'w-[350px]' },
+              { content: evaluation.city, width: 'w-[200px]' },
+              { content: evaluation.country, width: 'w-[100px]' },
+              { content: evaluation.theme, width: 'w-[100px]' },
+              { content: evaluation.idCurso, width: 'w-[100px]' },
+              { content: evaluation.idmodules, width: 'w-[100px]' },
+              { content: evaluation.idseccion, width: 'w-[100px]' },
+              { content: evaluation.seccion, width: 'w-[100px]' },
+              { content: evaluation.Curso, width: 'w-[400px]' },
+              { content: evaluation.cursocorto, width: 'w-[110px]' },
+              { content: evaluation.Categoria, width: 'w-[200px]' },
+              { content: evaluation.Categoria1, width: 'w-[150px]' },
+              { content: evaluation.Evaluacion, width: 'w-[400px]' },
+              { content: evaluation.Nota, width: 'w-[100px]' },
+              { content: evaluation.Objetivo, width: 'w-[100px]' },
+              { content: evaluation.Porcentaje, width: 'w-[150px]' },
+              { content: evaluation.tipo_curso, width: 'w-[150px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

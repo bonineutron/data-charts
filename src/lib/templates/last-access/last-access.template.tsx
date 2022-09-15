@@ -2,18 +2,23 @@ import { ILastAccessData } from '../../../shared/interfaces/last-access.interfac
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TotalsCard from '../../atoms/totals-card/totals-card.atom';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Input from '../../atoms/input/input.atom';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsLastAccessTemplate = {
   data: ILastAccessData[];
 };
 
 export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -95,6 +100,21 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
     setdateOne('');
     setdateTwo('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 200]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 190, 190);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Last Access' name='description' content='Last access page.'>
@@ -148,30 +168,39 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
           </CSVLink>
         </div>
       </div>
-      <TotalsCard title={dataTable.length} subTitle='Total de Ultimos Accesos' />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'Nombre', width: 'w-[250px]' },
-            { content: 'Apellidos', width: 'w-[250px]' },
-            { content: 'usuario', width: 'w-[300px]' },
-            { content: 'curso', width: 'w-[400px]' },
-            { content: 'Categoria', width: 'w-[200px]' },
-            { content: 'fecha', width: 'w-[200px]' },
-            { content: 'Ultimo_acceso_dias', width: 'w-[200px]' }
-          ],
-          bodyCells: dataTable.map((access: ILastAccessData) => [
-            { content: access.Nombre, width: 'w-[250px]' },
-            { content: access.Apellidos, width: 'w-[250px]' },
-            { content: access.usuario, width: 'w-[300px]' },
-            { content: access.curso, width: 'w-[400px]' },
-            { content: access.Categoria, width: 'w-[200px]' },
-            { content: access.fecha, width: 'w-[200px]' },
-            { content: access.Ultimo_acceso_dias, width: 'w-[200px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <TotalsCard title={dataTable.length} subTitle='Total de Ultimos Accesos' />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'Nombre', width: 'w-[250px]' },
+              { content: 'Apellidos', width: 'w-[250px]' },
+              { content: 'usuario', width: 'w-[300px]' },
+              { content: 'curso', width: 'w-[400px]' },
+              { content: 'Categoria', width: 'w-[200px]' },
+              { content: 'fecha', width: 'w-[200px]' },
+              { content: 'Ultimo_acceso_dias', width: 'w-[200px]' }
+            ],
+            bodyCells: dataTable.map((access: ILastAccessData) => [
+              { content: access.Nombre, width: 'w-[250px]' },
+              { content: access.Apellidos, width: 'w-[250px]' },
+              { content: access.usuario, width: 'w-[300px]' },
+              { content: access.curso, width: 'w-[400px]' },
+              { content: access.Categoria, width: 'w-[200px]' },
+              { content: access.fecha, width: 'w-[200px]' },
+              { content: access.Ultimo_acceso_dias, width: 'w-[200px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

@@ -6,15 +6,15 @@ import Link from 'next/link';
 export default function TopBarMolecule(): JSX.Element {
   // settings
   const router = useRouter();
-  const popUpRef = useRef<any>();
+  const popUpRef = useRef<HTMLDivElement>(null);
 
   // states
   const [popUp, setPopUp] = useState<boolean>(false);
 
   // effects
   useEffect(() => {
-    document.addEventListener('click', (event: any) => {
-      if (!popUpRef?.current?.contains(event.target)) {
+    document.addEventListener('click', (event: MouseEvent) => {
+      if (!popUpRef?.current?.contains(event.target as Node)) {
         setPopUp(false);
       }
     });

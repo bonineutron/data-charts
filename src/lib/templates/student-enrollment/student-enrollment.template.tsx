@@ -1,19 +1,24 @@
 import { IStudentEnrollmentData } from '../../../shared/interfaces/student-enrollment.interface';
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ButtonAtom from '../../atoms/button/button.atom';
 import Select from '../../atoms/select/select.atom';
 import Bar from '../../organisms/bar/bar.organism';
 import Input from '../../atoms/input/input.atom';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsStudentEnrollmentTemplate = {
   data: IStudentEnrollmentData[];
 };
 
 export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollmentTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -100,6 +105,21 @@ export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollme
     setdateOne('');
     setdateTwo('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 290]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 280);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Student Enrollment' name='description' content='Student enrollment page.'>
@@ -136,36 +156,45 @@ export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollme
           </CSVLink>
         </div>
       </div>
-      <Bar dataBar={barValues} labels={coursesOptions} title='Total de Matriculados por Curso' />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'Usuario', width: 'w-[100px]' },
-            { content: 'Nombre', width: 'w-[250px]' },
-            { content: 'Apellido', width: 'w-[250px]' },
-            { content: 'Email', width: 'w-[300px]' },
-            { content: 'Curso', width: 'w-[400px]' },
-            { content: 'tipo_curso', width: 'w-[100px]' },
-            { content: 'Fecha_Matricula', width: 'w-[200px]' },
-            { content: 'Anio', width: 'w-[100px]' },
-            { content: 'Mes', width: 'w-[100px]' },
-            { content: 'Dia', width: 'w-[100px]' }
-          ],
-          bodyCells: dataTable.map((student: IStudentEnrollmentData) => [
-            { content: student.Usuario, width: 'w-[100px]' },
-            { content: student.Nombre, width: 'w-[250px]' },
-            { content: student.Apellido, width: 'w-[250px]' },
-            { content: student.Email, width: 'w-[300px]' },
-            { content: student.Curso, width: 'w-[400px]' },
-            { content: student.tipo_curso, width: 'w-[100px]' },
-            { content: student.Fecha_Matricula, width: 'w-[200px]' },
-            { content: student.Anio, width: 'w-[100px]' },
-            { content: student.Mes, width: 'w-[100px]' },
-            { content: student.Dia, width: 'w-[100px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <Bar dataBar={barValues} labels={coursesOptions} title='Total de Matriculados por Curso' />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'Usuario', width: 'w-[100px]' },
+              { content: 'Nombre', width: 'w-[250px]' },
+              { content: 'Apellido', width: 'w-[250px]' },
+              { content: 'Email', width: 'w-[300px]' },
+              { content: 'Curso', width: 'w-[400px]' },
+              { content: 'tipo_curso', width: 'w-[100px]' },
+              { content: 'Fecha_Matricula', width: 'w-[200px]' },
+              { content: 'Anio', width: 'w-[100px]' },
+              { content: 'Mes', width: 'w-[100px]' },
+              { content: 'Dia', width: 'w-[100px]' }
+            ],
+            bodyCells: dataTable.map((student: IStudentEnrollmentData) => [
+              { content: student.Usuario, width: 'w-[100px]' },
+              { content: student.Nombre, width: 'w-[250px]' },
+              { content: student.Apellido, width: 'w-[250px]' },
+              { content: student.Email, width: 'w-[300px]' },
+              { content: student.Curso, width: 'w-[400px]' },
+              { content: student.tipo_curso, width: 'w-[100px]' },
+              { content: student.Fecha_Matricula, width: 'w-[200px]' },
+              { content: student.Anio, width: 'w-[100px]' },
+              { content: student.Mes, width: 'w-[100px]' },
+              { content: student.Dia, width: 'w-[100px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <ButtonAtom
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }

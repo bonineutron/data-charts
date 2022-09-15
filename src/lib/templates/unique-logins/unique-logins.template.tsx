@@ -2,17 +2,22 @@ import { IUniqueLoginsData } from '../../../shared/interfaces/unique-logins.inte
 import LayoutOrganism from '../../organisms/layout/layout.organism';
 import TotalsCard from '../../atoms/totals-card/totals-card.atom';
 import TableOrganism from '../../organisms/table/table.organism';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Button from '../../atoms/button/button.atom';
 import Input from '../../atoms/input/input.atom';
-import { useState, useEffect } from 'react';
 import { MdRefresh } from 'react-icons/md';
+import { toPng } from 'html-to-image';
 import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
 
 type PropsUniqueLoginsTemplate = {
   data: IUniqueLoginsData[];
 };
 
 export default function UniqueLoginsTemplate({ data }: PropsUniqueLoginsTemplate): JSX.Element {
+  // settings
+  const ref = useRef<HTMLDivElement>(null);
+
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
@@ -55,6 +60,21 @@ export default function UniqueLoginsTemplate({ data }: PropsUniqueLoginsTemplate
     setdateOne('');
     setdateTwo('');
   };
+  const generatePdf = useCallback(() => {
+    if (ref.current === null) {
+      return;
+    }
+    toPng(ref.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const imgData = dataUrl;
+        const pdf = new jsPDF('p', 'mm', [210, 200]);
+        pdf.addImage(imgData, 'PNG', 5, 5, 190, 190);
+        pdf.save('download.pdf');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [ref]);
 
   return (
     <LayoutOrganism title='Data Charts - Unique Logins' name='description' content='Unique logins page.'>
@@ -84,28 +104,37 @@ export default function UniqueLoginsTemplate({ data }: PropsUniqueLoginsTemplate
           </CSVLink>
         </div>
       </div>
-      <TotalsCard title={dataTable.length} subTitle='Total de logueos unicos' />
-      <TableOrganism
-        data={{
-          headCells: [
-            { content: 'Fecha', width: 'w-[200px]' },
-            { content: 'Anio', width: 'w-[100px]' },
-            { content: 'Mes', width: 'w-[100px]' },
-            { content: 'semana', width: 'w-[100px]' },
-            { content: 'Dia', width: 'w-[100px]' },
-            { content: 'conteo_de_usuarios', width: 'w-[150px]' }
-          ],
-          bodyCells: dataTable.map((login: IUniqueLoginsData) => [
-            { content: login.Fecha, width: 'w-[200px]' },
-            { content: login.Anio, width: 'w-[100px]' },
-            { content: login.Mes, width: 'w-[100px]' },
-            { content: login.semana, width: 'w-[100px]' },
-            { content: login.Dia, width: 'w-[100px]' },
-            { content: login.conteo_de_usuarios, width: 'w-[150px]' }
-          ])
-        }}
-        messageNotFound={MessageNotFound}
-      />
+      <div className='w-full h-full' ref={ref}>
+        <TotalsCard title={dataTable.length} subTitle='Total de logueos unicos' />
+        <TableOrganism
+          data={{
+            headCells: [
+              { content: 'Fecha', width: 'w-[200px]' },
+              { content: 'Anio', width: 'w-[100px]' },
+              { content: 'Mes', width: 'w-[100px]' },
+              { content: 'semana', width: 'w-[100px]' },
+              { content: 'Dia', width: 'w-[100px]' },
+              { content: 'conteo_de_usuarios', width: 'w-[150px]' }
+            ],
+            bodyCells: dataTable.map((login: IUniqueLoginsData) => [
+              { content: login.Fecha, width: 'w-[200px]' },
+              { content: login.Anio, width: 'w-[100px]' },
+              { content: login.Mes, width: 'w-[100px]' },
+              { content: login.semana, width: 'w-[100px]' },
+              { content: login.Dia, width: 'w-[100px]' },
+              { content: login.conteo_de_usuarios, width: 'w-[150px]' }
+            ])
+          }}
+          messageNotFound={MessageNotFound}
+        />
+      </div>
+      <div className='text-center'>
+        <Button
+          content='Exportar PDF'
+          onClick={() => generatePdf()}
+          customClass='shadow-lg text-[16px] bg-[#C0392B] mt-4'
+        />
+      </div>
     </LayoutOrganism>
   );
 }
