@@ -6,4 +6,5 @@ export interface ITableData {
 export interface ITableCell {
   content: string | number | JSX.Element | null;
   width?: string; // tailwind format
+  colorRow?: string;
 }

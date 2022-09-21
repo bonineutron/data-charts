@@ -132,6 +132,7 @@ export default function NotAccessTemplate({ data }: PropsNotAccessTemplate): JSX
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

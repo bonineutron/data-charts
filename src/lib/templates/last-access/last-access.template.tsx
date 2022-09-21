@@ -25,10 +25,12 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
   const [dataTable, setDataTable] = useState<ILastAccessData[]>([]);
   const [coursesOptions, setCoursesOptions] = useState<any>([]);
   const [categoriesOptions, setCategoriesOptions] = useState<any>([]);
+  const [categoriesOptions1, setCategoriesOptions1] = useState<any>([]);
+  const [categoriesOptions2, setCategoriesOptions2] = useState<any>([]);
   const [course, setCourse] = useState<string>('');
   const [category, setCategory] = useState<string>('');
-  const [dateOne, setdateOne] = useState<string>('');
-  const [dateTwo, setdateTwo] = useState<string>('');
+  const [category1, setCategory1] = useState<string>('');
+  const [category2, setCategory2] = useState<string>('');
 
   // effects
   useEffect(() => {
@@ -41,40 +43,23 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
     // courses filtering
     let courses = dataTable.map((course: ILastAccessData) => course.curso);
     setCoursesOptions(courses.filter((item: string | null, index: number) => courses.indexOf(item) === index));
+    // courses filtering
+    let categories1 = dataTable.map((course: ILastAccessData) => course.Categoria1);
+    setCategoriesOptions1(
+      categories1.filter((item: string | null, index: number) => categories1.indexOf(item) === index)
+    );
+    // courses filtering
+    let categories2 = dataTable.map((course: ILastAccessData) => course.Categoria2);
+    setCategoriesOptions2(
+      categories2.filter((item: string | null, index: number) => categories2.indexOf(item) === index)
+    );
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
 
   // methods
-  const filter = (category: string, course: string, dateOne: string, dateTwo: string) => {
+  const filter = (category: string, category1: string, category2: string, course: string) => {
     setFilterStarted(true);
-    if (category && dateOne && dateTwo) {
-      setDataTable(
-        dataTable.filter(
-          (access: ILastAccessData) =>
-            access.Categoria === category &&
-            access.fecha &&
-            access.fecha.substring(0, 10) >= dateOne &&
-            access.fecha.substring(0, 10) <= dateTwo
-        )
-      );
-      return;
-    }
-    if (category && course) {
-      setDataTable(
-        dataTable.filter((access: ILastAccessData) => access.Categoria === category && access.curso === course)
-      );
-      return;
-    }
-    if (dateOne && dateTwo) {
-      setDataTable(
-        dataTable.filter(
-          (access: ILastAccessData) =>
-            access.fecha && access.fecha.substring(0, 10) >= dateOne && access.fecha.substring(0, 10) <= dateTwo
-        )
-      );
-      return;
-    }
     if (course) {
       setDataTable(dataTable.filter((access: ILastAccessData) => access.curso === course));
       return;
@@ -83,11 +68,12 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
       setDataTable(dataTable.filter((access: ILastAccessData) => access.Categoria === category));
       return;
     }
-    if (dateOne) {
-      console.log(dateOne);
-      setDataTable(
-        dataTable.filter((access: ILastAccessData) => access.fecha && access.fecha.substring(0, 10) == dateOne)
-      );
+    if (category1) {
+      setDataTable(dataTable.filter((access: ILastAccessData) => access.Categoria1 === category1));
+      return;
+    }
+    if (category2) {
+      setDataTable(dataTable.filter((access: ILastAccessData) => access.Categoria2 === category2));
       return;
     }
   };
@@ -97,8 +83,8 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
     setMessageNotFound(false);
     setCourse('');
     setCategory('');
-    setdateOne('');
-    setdateTwo('');
+    setCategory1('');
+    setCategory2('');
   };
   const generatePdf = useCallback(() => {
     if (ref.current === null) {
@@ -138,28 +124,35 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
             customClass='w-[170px]'
             flexCol
           />
-          <Input
-            type='date'
-            value={dateOne}
-            setValue={setdateOne}
-            label='Fecha inicio:'
-            customClass='w-[170px] uppercase'
+          <Select
+            value={category1}
+            label='Categoría 1:'
+            setValue={setCategory1}
+            options={
+              categoriesOptions1
+                ? categoriesOptions1.map((category: any) => ({ value: category, label: category }))
+                : []
+            }
+            customClass='w-[170px]'
             flexCol
           />
-          <Input
-            type='date'
-            value={dateTwo}
-            setValue={setdateTwo}
-            label='Fecha fin:'
-            customClass={`${!dateOne ? 'cursor-not-allowed' : ''} w-[170px] uppercase`}
-            disabled={!dateOne && true}
+          <Select
+            value={category2}
+            label='Categoría 2:'
+            setValue={setCategory2}
+            options={
+              categoriesOptions2
+                ? categoriesOptions2.map((category: any) => ({ value: category, label: category }))
+                : []
+            }
+            customClass='w-[170px]'
             flexCol
           />
         </div>
         <div className='w-[200px] flex justify-between items-center'>
           <ButtonAtom
             content='Filtrar'
-            onClick={() => filter(category, course, dateOne, dateTwo)}
+            onClick={() => filter(category, category1, category2, course)}
             customClass='shadow-lg'
           />
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
@@ -175,11 +168,13 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
             headCells: [
               { content: 'Nombre', width: 'w-[250px]' },
               { content: 'Apellidos', width: 'w-[250px]' },
-              { content: 'usuario', width: 'w-[300px]' },
-              { content: 'curso', width: 'w-[400px]' },
+              { content: 'Usuario', width: 'w-[300px]' },
+              { content: 'Curso', width: 'w-[400px]' },
               { content: 'Categoria', width: 'w-[200px]' },
-              { content: 'fecha', width: 'w-[200px]' },
-              { content: 'Ultimo_acceso_dias', width: 'w-[200px]' }
+              { content: 'Categoría 1', width: 'w-[200px]' },
+              { content: 'Categoría 2', width: 'w-[200px]' },
+              { content: 'Fecha', width: 'w-[200px]' },
+              { content: 'Dias trancurridos(hoy)', width: 'w-[200px]' }
             ],
             bodyCells: dataTable.map((access: ILastAccessData) => [
               { content: access.Nombre, width: 'w-[250px]' },
@@ -187,8 +182,14 @@ export default function LastAccessTemplate({ data }: PropsLastAccessTemplate) {
               { content: access.usuario, width: 'w-[300px]' },
               { content: access.curso, width: 'w-[400px]' },
               { content: access.Categoria, width: 'w-[200px]' },
+              { content: access.Categoria1, width: 'w-[200px]' },
+              { content: access.Categoria2, width: 'w-[200px]' },
               { content: access.fecha, width: 'w-[200px]' },
-              { content: access.Ultimo_acceso_dias, width: 'w-[200px]' }
+              {
+                content: access.Ultimo_acceso_dias,
+                width: 'w-[200px]',
+                colorRow: access.Ultimo_acceso_dias && access.Ultimo_acceso_dias > 60 ? 'red' : 'green'
+              }
             ])
           }}
           messageNotFound={MessageNotFound}

@@ -6,4 +6,7 @@ export interface ILastAccessData {
   Categoria: string | null;
   fecha: string | null;
   Ultimo_acceso_dias: number | null;
+  Email: string | null;
+  Categoria1: string | null;
+  Categoria2: string | null;
 }

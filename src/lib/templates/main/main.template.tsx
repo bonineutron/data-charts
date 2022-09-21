@@ -9,8 +9,8 @@ export default function MainTemplate(): JSX.Element {
       title='Data Charts'
       name='description'
       content='Main page this app, dashboard view. Charts of all business data.'>
-      <div className='flex flex-wrap gap-6 mt-10'>
-        <Link href='/activities'>
+      <div className='grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 gap-11 mt-10'>
+        {/* <Link href='/activities'>
           <a>
             <div
               className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[0]}`}>
@@ -20,34 +20,34 @@ export default function MainTemplate(): JSX.Element {
               </div>
             </div>
           </a>
-        </Link>
+        </Link> */}
         <Link href='/courses'>
           <a>
             <div
               className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[1]}`}>
-              <span className='text-[20px] font-semibold'>Cursos</span>
+              <span className='text-[20px] font-semibold'>Listado de cursos</span>
               <div className='text-[40px] h-full flex items-end'>
                 <BiRightArrowCircle />
               </div>
             </div>
           </a>
         </Link>
-        <Link href='/completed-activities'>
+        <Link href='/not-access'>
           <a>
             <div
-              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[2]}`}>
-              <span className='text-[20px] font-semibold'>Actividades finalizadas</span>
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[9]}`}>
+              <span className='text-[20px] font-semibold'>Usuarios sin acceder</span>
               <div className='text-[40px] h-full flex items-end'>
                 <BiRightArrowCircle />
               </div>
             </div>
           </a>
         </Link>
-        <Link href='/click-courses'>
+        <Link href='/last-access'>
           <a>
             <div
-              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[3]}`}>
-              <span className='text-[20px] font-semibold'>Clic por cursos</span>
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[10]}`}>
+              <span className='text-[20px] font-semibold'>Último acceso a cursos</span>
               <div className='text-[40px] h-full flex items-end'>
                 <BiRightArrowCircle />
               </div>
@@ -65,6 +65,40 @@ export default function MainTemplate(): JSX.Element {
             </div>
           </a>
         </Link>
+        <Link href='/completed-activities'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[2]}`}>
+              <span className='text-[20px] font-semibold'>Actividades finalizadas</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/matriculated-badges'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[7]}`}>
+              <span className='text-[20px] font-semibold'>Insignias de Matriculados</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+        <Link href='/click-courses'>
+          <a>
+            <div
+              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[3]}`}>
+              <span className='text-[20px] font-semibold'>Clic por cursos</span>
+              <div className='text-[40px] h-full flex items-end'>
+                <BiRightArrowCircle />
+              </div>
+            </div>
+          </a>
+        </Link>
+
         <Link href='/state-courses'>
           <a>
             <div
@@ -114,28 +148,6 @@ export default function MainTemplate(): JSX.Element {
             <div
               className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[8]}`}>
               <span className='text-[20px] font-semibold'>Matriculas estudiantes</span>
-              <div className='text-[40px] h-full flex items-end'>
-                <BiRightArrowCircle />
-              </div>
-            </div>
-          </a>
-        </Link>
-        <Link href='/not-access'>
-          <a>
-            <div
-              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[9]}`}>
-              <span className='text-[20px] font-semibold'>No acceden</span>
-              <div className='text-[40px] h-full flex items-end'>
-                <BiRightArrowCircle />
-              </div>
-            </div>
-          </a>
-        </Link>
-        <Link href='/last-access'>
-          <a>
-            <div
-              className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[10]}`}>
-              <span className='text-[20px] font-semibold'>Ultimo acceso</span>
               <div className='text-[40px] h-full flex items-end'>
                 <BiRightArrowCircle />
               </div>

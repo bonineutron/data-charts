@@ -11,7 +11,7 @@ export default function Courses(): JSX.Element {
   useEffect(() => {
     axios
       .post('https://data-charts-api.herokuapp.com/api/tables', {
-        table: 'mdl_course2'
+        table: 'mdl_lista_cursos_def'
       })
       .then((data) => setCourseData(data.data));
   }, []);

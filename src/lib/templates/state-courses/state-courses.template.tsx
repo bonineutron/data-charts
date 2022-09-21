@@ -198,6 +198,7 @@ export default function StateCoursesTemplate({ data }: PropsStateCoursesTemplate
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

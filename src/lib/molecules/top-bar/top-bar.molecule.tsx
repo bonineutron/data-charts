@@ -29,7 +29,7 @@ export default function TopBarMolecule(): JSX.Element {
 
   return (
     <nav className='fixed w-full z-[100] h-[60px] shadow-lg bg-white'>
-      <ul className='relative w-[90%] h-full mx-auto flex justify-between items-center text-[18px] font-semibold md:w-[70%] lg:w-[900px] xl:w-[1100px]'>
+      <ul className='relative w-[90%] h-full mx-auto flex justify-between items-center text-[18px] font-semibold md:w-[70%] lg:w-[900px] xl:w-[1200px]'>
         <Link href='/'>
           <a className='min-w-fit'>Data Charts</a>
         </Link>
@@ -43,21 +43,31 @@ export default function TopBarMolecule(): JSX.Element {
           className={`${
             !popUp && 'hidden'
           } absolute py-4 px-8 flex flex-col gap-2 right-0 top-[80px] bg-white rounded-lg shadow-lg`}>
-          <Link href='/activities'>
+          {/* <Link href='/activities'>
             <a className={aClass('/activities')}>Actividades</a>
-          </Link>
+          </Link> */}
           <Link href='/courses'>
-            <a className={aClass('/courses')}>Cursos</a>
+            <a className={aClass('/courses')}>Listado de cursos</a>
           </Link>
-          <Link href='/completed-activities'>
-            <a className={aClass('/completed-activities')}>Actividades finalizadas</a>
+          <Link href='/not-access'>
+            <a className={aClass('/not-access')}>Usuarios sin acceder</a>
           </Link>
-          <Link href='/click-courses'>
-            <a className={aClass('/click-courses')}>Clic por cursos</a>
+          <Link href='/last-access'>
+            <a className={aClass('/last-access')}>Último acceso a cursos</a>
           </Link>
           <Link href='/completed-courses'>
             <a className={aClass('/completed-courses')}>Cursos finalizados</a>
           </Link>
+          <Link href='/completed-activities'>
+            <a className={aClass('/completed-activities')}>Actividades finalizadas</a>
+          </Link>
+          <Link href='/matriculated-badges'>
+            <a className={aClass('/matriculated-badges')}>Insignias de matriculados</a>
+          </Link>
+          <Link href='/click-courses'>
+            <a className={aClass('/click-courses')}>Clic por cursos</a>
+          </Link>
+
           <Link href='/state-courses'>
             <a className={aClass('/state-courses')}>Estado cursos</a>
           </Link>
@@ -72,12 +82,6 @@ export default function TopBarMolecule(): JSX.Element {
           </Link>
           <Link href='/student-enrollment'>
             <a className={aClass('/student-enrollment')}>Matriculas estudiantes</a>
-          </Link>
-          <Link href='/not-access'>
-            <a className={aClass('/not-access')}>No acceden</a>
-          </Link>
-          <Link href='/last-access'>
-            <a className={aClass('/last-access')}>Ultimo acceso</a>
           </Link>
           <Link href='/online-users'>
             <a

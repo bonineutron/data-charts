@@ -186,6 +186,7 @@ export default function StudentEnrollmentTemplate({ data }: PropsStudentEnrollme
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

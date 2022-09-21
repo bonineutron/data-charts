@@ -126,6 +126,7 @@ export default function UniqueLoginsTemplate({ data }: PropsUniqueLoginsTemplate
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

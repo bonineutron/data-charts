@@ -254,6 +254,7 @@ export default function ClickCoursesTemplate({ data }: PropsClickCoursesTemplate
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

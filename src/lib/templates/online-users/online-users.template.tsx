@@ -272,6 +272,7 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

@@ -23,7 +23,11 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
   const [dataTable, setDataTable] = useState<ICourseData[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<any>([]);
-  const [category, setCategory] = useState<number>(0);
+  const [categoryOptions1, setCategoryOptions1] = useState<any>([]);
+  const [categoryOptions2, setCategoryOptions2] = useState<any>([]);
+  const [category, setCategory] = useState<string>('');
+  const [category1, setCategory1] = useState<string>('');
+  const [category2, setCategory2] = useState<string>('');
   const [barValues, setBarValues] = useState<number[]>([]);
 
   // effects
@@ -32,24 +36,42 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
   }, [data]);
   useEffect(() => {
     // categories filtering
-    let categories = dataTable.map((category: ICourseData) => category.category);
-    setCategoryOptions(categories.filter((item: number | null, index: number) => categories.indexOf(item) === index));
+    let categories = dataTable.map((category: ICourseData) => category.Categoria);
+    setCategoryOptions(categories.filter((item: string | null, index: number) => categories.indexOf(item) === index));
+    // categories filtering
+    let categories1 = dataTable.map((category: ICourseData) => category.Categoria1);
+    setCategoryOptions1(
+      categories1.filter((item: string | null, index: number) => categories1.indexOf(item) === index)
+    );
+    // categories filtering
+    let categories2 = dataTable.map((category: ICourseData) => category.Categoria2);
+    setCategoryOptions2(
+      categories2.filter((item: string | null, index: number) => categories2.indexOf(item) === index)
+    );
     // message not found
     if (!dataTable.length && filterStarted) setMessageNotFound(true);
   }, [dataTable]);
   useEffect(() => {
     // data bar chart
-    let categories = dataTable.map((category: ICourseData) => category.category);
+    let categories = dataTable.map((category: ICourseData) => category.Categoria);
     let categoryCount = categories.reduce((prev: any, curr: any) => ((prev[curr] = prev[curr] + 1 || 1), prev), {});
     let reorderCount = categoryOptions.map((category: any) => (category = categoryCount[category]));
     setBarValues(reorderCount);
   }, [categoryOptions]);
 
   // methods
-  const filter = (category: number) => {
+  const filter = (category: string, category1: string, category2: string) => {
     setFilterStarted(true);
-    if (category !== 0) {
-      setDataTable(dataTable.filter((activity: ICourseData) => activity.category === category));
+    if (category) {
+      setDataTable(dataTable.filter((activity: ICourseData) => activity.Categoria === category));
+      return;
+    }
+    if (category1) {
+      setDataTable(dataTable.filter((activity: ICourseData) => activity.Categoria1 === category1));
+      return;
+    }
+    if (category2) {
+      setDataTable(dataTable.filter((activity: ICourseData) => activity.Categoria2 === category2));
       return;
     }
   };
@@ -57,7 +79,7 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
     setDataTable([...data]);
     setFilterStarted(false);
     setMessageNotFound(false);
-    setCategory(0);
+    setCategory('');
   };
   const generatePdf = useCallback(() => {
     if (ref.current === null) {
@@ -77,8 +99,8 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
 
   return (
     <LayoutOrganism title='Data Charts - Courses' name='description' content='Courses page.'>
-      <div className='flex justify-between items-center mb-4'>
-        <div className='w-[300px] flex justify-between'>
+      <div className='flex justify-between items-end mb-4'>
+        <div className='w-[600px] flex justify-between'>
           <Select
             value={category}
             label='Categorias:'
@@ -86,10 +108,36 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
             options={
               categoryOptions ? categoryOptions.map((category: any) => ({ value: category, label: category })) : []
             }
+            customClass='w-[170px]'
+            flexCol
+          />
+          <Select
+            value={category1}
+            label='Categoría 1:'
+            setValue={setCategory1}
+            options={
+              categoryOptions1 ? categoryOptions1.map((category: any) => ({ value: category, label: category })) : []
+            }
+            customClass='w-[170px]'
+            flexCol
+          />
+          <Select
+            value={category2}
+            label='Categoría 2:'
+            setValue={setCategory2}
+            options={
+              categoryOptions2 ? categoryOptions2.map((category: any) => ({ value: category, label: category })) : []
+            }
+            customClass='w-[170px]'
+            flexCol
           />
         </div>
         <div className='w-[200px] flex justify-between items-center'>
-          <ButtonAtom content='Filtrar' onClick={() => filter(category)} customClass='shadow-lg' />
+          <ButtonAtom
+            content='Filtrar'
+            onClick={() => filter(category, category1, category2)}
+            customClass='shadow-lg'
+          />
           <ButtonAtom content={<MdRefresh />} onClick={() => resetStates()} customClass='shadow-lg text-[24px]' />
           <CSVLink data={dataTable} className='px-4 py-2 bg-[#1ABC9C] text-white font-semibold rounded-lg shadow-lg'>
             CSV
@@ -97,32 +145,25 @@ export default function CoursesTemplate({ data }: PropsCoursesTemplate): JSX.Ele
         </div>
       </div>
       <div className='w-full h-full' ref={ref}>
-        <Bar dataBar={barValues} labels={categoryOptions} title='Total de Categorias' />
+        <Bar dataBar={barValues} labels={categoryOptions} title='Total Cursos por Categorías' />
         <TableOrganism
           data={{
             headCells: [
-              { content: 'Id', width: 'w-[100px]' },
-              { content: 'category', width: 'w-[100px]' },
-              { content: 'fullname', width: 'w-[400px]' },
-              { content: 'shortname', width: 'w-[150px]' },
-              { content: 'idnumber', width: 'w-[150px]' },
-              { content: 'visible', width: 'w-[100px]' },
-              { content: 'enable completion', width: 'w-[200px]' },
-              { content: 'tipo_curso', width: 'w-[150px]' },
-              { content: 'value', width: 'w-[100px]' }
+              { content: 'Curso', width: 'w-[400px]' },
+              { content: 'Nombre Corto', width: 'w-[100px]' },
+              { content: 'Categoría', width: 'w-[200px]' },
+              { content: 'Categoría 1', width: 'w-[150px]' },
+              { content: 'Categoría 2', width: 'w-[150px]' }
             ],
             bodyCells: dataTable.map((course: ICourseData) => [
-              { content: course.id, width: 'w-[100px]' },
-              { content: course.category, width: 'w-[100px]' },
-              { content: course.fullname, width: 'w-[400px]' },
-              { content: course.shortname, width: 'w-[150px]' },
-              { content: course.idnumber, width: 'w-[150px]' },
-              { content: course.visible, width: 'w-[100px]' },
-              { content: course.enablecompletion, width: 'w-[200px]' },
-              { content: course.tipo_curso, width: 'w-[150px]' },
-              { content: course.value, width: 'w-[100px]' }
+              { content: course.Curso, width: 'w-[400px]' },
+              { content: course.cursocorto, width: 'w-[100px]' },
+              { content: course.Categoria, width: 'w-[200px]' },
+              { content: course.Categoria1, width: 'w-[150px]' },
+              { content: course.Categoria2, width: 'w-[150px]' }
             ])
           }}
+          colorRow
         />
       </div>
       <div className='text-center'>

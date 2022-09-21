@@ -213,6 +213,7 @@ export default function EvaluationsTemplate({ data }: PropsEvaluationsTemplate):
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>

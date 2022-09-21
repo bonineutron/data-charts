@@ -7,9 +7,10 @@ import { useState, useEffect } from 'react';
 type PropsTableAtom = {
   data: ITableData;
   messageNotFound?: boolean;
+  colorRow?: boolean;
 };
 
-export default function TableAtom({ data, messageNotFound }: PropsTableAtom): JSX.Element {
+export default function TableAtom({ data, messageNotFound, colorRow }: PropsTableAtom): JSX.Element {
   // states
   const [chunkResult, setChunkResult] = useState<ITableCell[][]>([]);
   const [position, setPosition] = useState<number>(0);
@@ -48,13 +49,21 @@ export default function TableAtom({ data, messageNotFound }: PropsTableAtom): JS
               ? chunkResult[position].map((cells: any, index: number) => (
                   <tr
                     key={`tr-${index}`}
-                    className={`w-full flex justify-between gap-x-4 px-4 py-1 text-gray-500 ${
-                      index % 2 && 'bg-gray-100'
+                    className={`relative w-full flex justify-between gap-x-4 px-4 py-1 text-gray-500 ${
+                      colorRow && index % 2 ? 'bg-gray-100' : ''
                     }`}>
                     {cells.map((cell: ITableCell, index: number) => (
-                      <td key={`td-${index}`} className={`flex items-center ${cell.width || 'w-full'}`}>
-                        {cell.content}
-                      </td>
+                      <>
+                        {cell.colorRow === 'red' && (
+                          <div className='absolute h-full w-full top-0 left-0 bg-red-500 opacity-10 border-t-[1px] border-black'></div>
+                        )}
+                        {cell.colorRow === 'green' && (
+                          <div className='absolute h-full w-full top-0 left-0 bg-green-500 opacity-10 border-t-[1px] border-black'></div>
+                        )}
+                        <td key={`td-${index}`} className={`flex items-center ${cell.width || 'w-full'}`}>
+                          {cell.content}
+                        </td>
+                      </>
                     ))}
                   </tr>
                 ))

@@ -1,0 +1,20 @@
+export interface IMatriculatedData {
+  userid: number | null;
+  Usuario: string | null;
+  Nombre: string | null;
+  Apellido: string | null;
+  Email: string | null;
+  idbadge: number | null;
+  Categoria: string | null;
+  Categoria1: string | null;
+  Categoria2: string | null;
+  courseid: number | null;
+  Curso: string | null;
+  badge: number | null;
+  NAME: string | null;
+  Nombre_insignia: string | null;
+  badgescore: number | null;
+  context: number | null;
+  otorgada: number | null;
+  puntos_otorgada: number | null;
+}

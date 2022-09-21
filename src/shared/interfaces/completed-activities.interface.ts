@@ -4,14 +4,10 @@ export interface ICompletedActivitiesData {
   Nombre: string | null;
   Apellido: string | null;
   Email: string | null;
-  city: string | null;
-  country: string | null;
-  theme: string | null;
   idCurso: number | null;
   idseccion: number | null;
   Seccion: string | null;
   Curso: string | null;
-  tipo_curso: string | null;
   Categoria: string | null;
   Categoria1: string | null;
   cursocorto: string | null;
@@ -19,4 +15,6 @@ export interface ICompletedActivitiesData {
   orden_actividad: number | null;
   tipo: string | null;
   Finalizacion: number | null;
+  Categoria2: string | null;
+  fecha_finalización: string | null;
 }

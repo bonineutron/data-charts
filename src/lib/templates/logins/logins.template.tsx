@@ -124,6 +124,7 @@ export default function LoginsTemplate({ data }: PropsLoginsTemplate): JSX.Eleme
             ])
           }}
           messageNotFound={MessageNotFound}
+          colorRow
         />
       </div>
       <div className='text-center'>
