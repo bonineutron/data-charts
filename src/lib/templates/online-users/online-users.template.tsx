@@ -32,7 +32,7 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
   // states
   const [MessageNotFound, setMessageNotFound] = useState<boolean>(false);
   const [filterStarted, setFilterStarted] = useState<boolean>(false);
-  const [dataChart, setDataChart] = useState<IDataChart[]>([]);
+  //const [dataChart, setDataChart] = useState<IDataChart[]>([]);
   const [dataTable, setDataTable] = useState<IUserData[]>([]);
   const [month, setMonth] = useState<number>(currentDate.getMonth() + 1);
   const [year, setYear] = useState<number>(currentDate.getFullYear());
@@ -90,26 +90,33 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
     return day + startCell;
   };
   const generateDataChart = (dataUsers: IUserData[]) => {
-    // withdraw one day for repeated days
-    let days = dataUsers.map((day: IUserData) => day.Fecha && day.Fecha.substring(0, 10));
-    let unifyDays = days.filter((item: string | null, index: number) => days.indexOf(item) === index);
-    // separate by days in lists
-    let separateDays: IUserData[][] = [];
-    for (let i: number = 0; i < unifyDays.length; i++) {
-      separateDays.push(dataUsers.filter((day: IUserData) => day.Fecha && day.Fecha.substring(0, 10) === unifyDays[i]));
+    //
+    let separateByDays = [];
+    for (let i = 1; i <= 7; i++) {
+      let day = dataUsers.filter((day: IUserData) => day.Dia2 === i + 1);
+      console.log(day);
     }
-    // separate by online users in lists
-    let separateUsersOnline = separateDays.map((days: IUserData[]) => ({
-      day: days[0].Dia,
-      users: days.map((day: IUserData) => day.usuarios_online)
-    }));
-    // create object with sum of users and ids
-    let sumOnlineUsers = separateUsersOnline.map((user) => ({
-      day: user.day,
-      cellId: user.day && assignId(user.day),
-      users: user.users && user.users.reduce((prev: number, curr: number | null) => prev + Number(curr), 0)
-    }));
-    setDataChart(sumOnlineUsers);
+
+    // let unifyDays = days.filter((item: string | null, index: number) => days.indexOf(item) === index);
+    // // separate by days in lists
+    // let separateDays: IUserData[][] = [];
+    // for (let i: number = 0; i < unifyDays.length; i++) {
+    //   separateDays.push(dataUsers.filter((day: IUserData) => day.Fecha && day.Fecha.substring(0, 10) === unifyDays[i]));
+    // }
+    // // separate by online users in lists
+    // let separateUsersOnline = separateDays.map((days: IUserData[]) => ({
+    //   day: days[0].Dia,
+    //   users: days.map((day: IUserData) => day.usuarios_online)
+    // }));
+    // // create object with sum of users and ids
+    // let sumOnlineUsers = separateUsersOnline.map((user) => ({
+    //   day: user.day,
+    //   cellId: user.day && assignId(user.day),
+    //   users: user.users && user.users.reduce((prev: number, curr: number | null) => prev + Number(curr), 0)
+    // }));
+    //console.log(separateByDays);
+
+    //setDataChart(sumOnlineUsers);
   };
   const firstDataChart = () => {
     let firstData = data.filter(
@@ -155,10 +162,12 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
       });
   }, [ref]);
 
+  //console.log(dataChart);
+
   return (
     <LayoutOrganism title='Data Charts - Online Users' name='description' content='Online users page.'>
       <div className='flex justify-between items-center mb-4'>
-        <div className='w-[600px] flex justify-between'>
+        <div className='w-[500px] flex justify-between'>
           <Select
             options={[
               { value: 1, label: Months.January },
@@ -190,42 +199,6 @@ export default function OnlineUsersTemplate({ data }: PropsOnlineUsersTemplate):
         </div>
       </div>
       <div className='w-full h-full' ref={ref}>
-        <div className='mb-2'>
-          <h2 className='w-fit mx-auto font-semibold text-[20px] my-2'>{dateLabel}</h2>
-          <ol className='grid grid-cols-7'>
-            <li className={classDays}>Lun</li>
-            <li className={classDays}>Mar</li>
-            <li className={classDays}>Mie</li>
-            <li className={classDays}>Jue</li>
-            <li className={classDays}>Vie</li>
-            <li className={classDays}>Sab</li>
-            <li className={`${classDays} border-r-[1px]`}>Dom</li>
-            {cellsChart.map((cell: number) => (
-              <li
-                key={cell}
-                className={`h-[60px] border-b-[1px] border-l-[1px] ${
-                  cell === 6 || cell === 13 || cell === 20 || cell === 27 || cell === 34 || cell === 41
-                    ? 'border-r-[1px]'
-                    : ''
-                }`}>
-                {dataChart.map(
-                  (day: IDataChart) =>
-                    cell === day.cellId && (
-                      <div
-                        key={cell}
-                        className={`relative h-full w-full flex flex-col justify-between ${usersColors(day.users)}`}>
-                        <span className='pr-2 text-right text-gray-400 italic text-sm'>{day.day}</span>
-                        <span className='absolute h-full w-full flex items-center justify-center gap-1 font-semibold'>
-                          {day.users === 1 ? <FiUser className='text-[20px]' /> : <FiUsers className='text-[20px]' />}
-                          {day.users}
-                        </span>
-                      </div>
-                    )
-                )}
-              </li>
-            ))}
-          </ol>
-        </div>
         <TableOrganism
           data={{
             headCells: [

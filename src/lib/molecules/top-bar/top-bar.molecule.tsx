@@ -74,13 +74,13 @@ export default function TopBarMolecule(): JSX.Element {
           <Link href='/evaluations'>
             <a className={aClass('/evaluations')}>Evaluaciones</a>
           </Link>
-          <Link href='/logins'>
+          {/* <Link href='/logins'>
             <a className={aClass('/logins')}>Logueos</a>
-          </Link>
+          </Link> */}
           <Link href='/unique-logins'>
             <a className={aClass('/unique-logins')}>Logueos unicos</a>
           </Link>
-          <Link href='/student-enrollment'>
+          {/* <Link href='/student-enrollment'>
             <a className={aClass('/student-enrollment')}>Matriculas estudiantes</a>
           </Link>
           <Link href='/online-users'>
@@ -90,7 +90,7 @@ export default function TopBarMolecule(): JSX.Element {
               } min-w-fit hover:text-gray-400`}>
               Usuarios en línea
             </a>
-          </Link>
+          </Link> */}
         </div>
       </ul>
     </nav>

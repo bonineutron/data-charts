@@ -121,7 +121,7 @@ export default function MainTemplate(): JSX.Element {
             </div>
           </a>
         </Link>
-        <Link href='/logins'>
+        {/* <Link href='/logins'>
           <a>
             <div
               className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[7]}`}>
@@ -131,7 +131,7 @@ export default function MainTemplate(): JSX.Element {
               </div>
             </div>
           </a>
-        </Link>
+        </Link> */}
         <Link href='/unique-logins'>
           <a>
             <div
@@ -143,7 +143,7 @@ export default function MainTemplate(): JSX.Element {
             </div>
           </a>
         </Link>
-        <Link href='/student-enrollment'>
+        {/* <Link href='/student-enrollment'>
           <a>
             <div
               className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[8]}`}>
@@ -153,8 +153,8 @@ export default function MainTemplate(): JSX.Element {
               </div>
             </div>
           </a>
-        </Link>
-        <Link href='/online-users'>
+        </Link> */}
+        {/* <Link href='/online-users'>
           <a>
             <div
               className={`w-[200px] h-[100px] flex justify-between rounded-lg shadow-lg p-4 text-white ${barGuideColors[11]}`}>
@@ -164,7 +164,7 @@ export default function MainTemplate(): JSX.Element {
               </div>
             </div>
           </a>
-        </Link>
+        </Link> */}
       </div>
     </LayoutOrganism>
   );

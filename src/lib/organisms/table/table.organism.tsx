@@ -2,7 +2,7 @@ import { ITableData, ITableCell } from '../../../shared/interfaces/table.interfa
 import { TableNavigation } from './abstractions/table.abstraction';
 import { chunkArray } from '../../../shared/utils/table.util';
 import SpinnerAtom from '../../atoms/spinner/spinner.atom';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 type PropsTableAtom = {
   data: ITableData;
@@ -53,17 +53,15 @@ export default function TableAtom({ data, messageNotFound, colorRow }: PropsTabl
                       colorRow && index % 2 ? 'bg-gray-100' : ''
                     }`}>
                     {cells.map((cell: ITableCell, index: number) => (
-                      <>
+                      <React.Fragment key={`td-${index}`}>
                         {cell.colorRow === 'red' && (
                           <div className='absolute h-full w-full top-0 left-0 bg-red-500 opacity-10 border-t-[1px] border-black'></div>
                         )}
                         {cell.colorRow === 'green' && (
                           <div className='absolute h-full w-full top-0 left-0 bg-green-500 opacity-10 border-t-[1px] border-black'></div>
                         )}
-                        <td key={`td-${index}`} className={`flex items-center ${cell.width || 'w-full'}`}>
-                          {cell.content}
-                        </td>
-                      </>
+                        <td className={`flex items-center ${cell.width || 'w-full'}`}>{cell.content}</td>
+                      </React.Fragment>
                     ))}
                   </tr>
                 ))
